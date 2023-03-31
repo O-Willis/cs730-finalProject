@@ -31,15 +31,6 @@ import numpy as np
         30  31  32  
           33  34  
             35
-            
-             0
-           1   -  
-         3   4   5  
-       6   -   -   -              
-    10      
-    
-    @3 -2 = 1 
-            
 '''
 
 
@@ -115,7 +106,6 @@ class Board():
             [12, 14, 22, 31],   # mid 24
             [13, 23, 32],       # edge 25
             [15, 17, 28, 33],           # edge 26
-
             [16, 18, 29, 34],   # mid 27
             [17, 19, 26, 33],   # mid 28
             [18, 20, 27, 34],       # edge 29
@@ -135,7 +125,7 @@ class Board():
 
         self.pieces = np.zeros((2, 6), dtype=np.int)
         #  [0,:] splices array and all column values become assigned
-        self.pieces[0, :] = [0, 1, 7, 3, 4, 5]
+        self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
         self.pieces[1, :] = 35 - np.array([0, 1, 2, 3, 4, 5])
 
     def __getitem__(self, index):
@@ -158,28 +148,56 @@ class Board():
                  ["-", " ", " ", " ", " ", " "]]
         out = ""
         index = 0
+        # for r in range(0, 11):
+        #     line = board[r]
+        #     linetab = r - 4
+        #     if (r <= 5):
+        #         linetab = 6 - r
+        #     for t in range(0, linetab):
+        #         out += "  "
+        #     for c in range(0, len(line)):
+        #         isEnd = c == len(line) - 1
+        #         cur = line[c]
+        #         if cur != "-" and cur != " ":
+        #             out += f"{cur} "
+        #         elif cur == "-":
+        #             tmpP1 = index == self.pieces[0,:]
+        #             tmpP2 = index == self.pieces[1,:]
+        #             arr1 = np.array([0, 1, 2, 3, 4, 5])
+        #             if np.sum(tmpP1):
+        #                 out += f" {arr1[tmpP1].item()}  "
+        #             elif np.sum(tmpP2):
+        #                 out += f"-{arr1[tmpP2].item()}  "
+        #             else:
+        #                 out += " -  "
+        #             # if index > 9:
+        #             #     out += str(index) + "  "
+        #             # else:
+        #             #     out += " " + str(index) + "  "
+        #             index += 1
+        #         if isEnd or cur == " ":
+        #             out += "\n"
+        #             break
         for r in range(0, 11):
             line = board[r]
             linetab = r - 4
             if (r <= 5):
                 linetab = 6 - r
             for t in range(0, linetab):
-                out += "  "
+                out += "   "
             for c in range(0, len(line)):
                 isEnd = c == len(line) - 1
                 cur = line[c]
-                if cur != "-" and cur != " ":
-                    out += f"{cur} "
-                elif cur == "-":
+                if cur == "-":
                     tmpP1 = index == self.pieces[0,:]
                     tmpP2 = index == self.pieces[1,:]
                     arr1 = np.array([0, 1, 2, 3, 4, 5])
                     if np.sum(tmpP1):
-                        out += f" {arr1[tmpP1].item()}  "
+                        out += f" 1_{arr1[tmpP1].item()}  "
                     elif np.sum(tmpP2):
-                        out += f"-{arr1[tmpP2].item()}  "
+                        out += f" 2_{arr1[tmpP2].item()}  "
                     else:
-                        out += " -  "
+                        out += "  -   "
                     # if index > 9:
                     #     out += str(index) + "  "
                     # else:
@@ -225,26 +243,20 @@ class Board():
             out.append(validMoves)
         return out
 
-    def has_legal_moves(self, color):
+    def has_legal_moves(self, player):
         """
         TODO might need to reimplement as goal state
             ie. when player has crossed all pieces
             |
             Might not need to in edge case for if other player traps a piece
         """
-
         """
         Receive all legal moves given a color
         """
-        for y in range(self.n):
-            for x in range(self.n):
-                if self[x][y] == color:
-                    newMoves = self.get_moves_for_position((x, y))
-                    if len(newMoves) > 0:
-                        return True
-        return False
+        curMoves = self.get_legal_moves(player)
+        return len(curMoves) == 0
 
-    def get_moves_for_position(self, pit):
+    def get_position_moves(self, pit):  # TODO
         """
         Returns all legal moves that use the given square
         """
@@ -266,7 +278,73 @@ class Board():
 
         return moves
 
-    def execute_move(self, player, action):  # TODO
+    def get_valid_single_moves(self, player, piece):
+        """
+        Gives all single moves given the player and piece number
+        """
+        map = np.zeros((36))
+        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
+        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
+        print(pieceInd)
+        singleMoves = np.array(self.moves[pieceInd])
+        validSingleMoves = singleMoves[map[singleMoves] == 0]
+        return validSingleMoves
+
+    def get_valid_jump_moves(self, player, piece):
+        map = np.zeros((36))
+        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
+        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
+        jumpMoves = np.array(self.jumpMoves[pieceInd])
+        singleMoves = np.array(self.moves[pieceInd])
+        singleInvalidMoves = singleMoves[map[singleMoves] != 0]  # represents invalid moves
+        validJumpMoves = []
+        # If there is an intersection between a single's valid move
+        for invalidMove in list(singleInvalidMoves):
+            potentialJumpMoves = np.array(self.moves[invalidMove])
+            # Find if there is space for a potential jump move
+            validPotentialJumpMoves = potentialJumpMoves[map[potentialJumpMoves] == 0]
+            for i in range(jumpMoves.shape[0]):  # going over the valid moves
+                if sum(jumpMoves[i] == validPotentialJumpMoves):
+                    validJumpMoves.append(jumpMoves[i])
+                    break
+        print(f"Piece {piece} has valid jump moves: {validJumpMoves}")
+        return validJumpMoves
+
+    def execute_move(self, player, piece, action):  # TODO might need to change framework to work with new parameters
         """
         Performs the given move on the board.
         """
+        moves = self.get_legal_moves(player)
+        # Should never call on execute if no moves are able to be made
+        assert len(list(moves)) > 0
+        print(f"Moving piece {piece} to pit[{action}]")
+
+        map = np.zeros((36))
+        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
+        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
+
+        validSingleMoves = self.get_valid_single_moves(player, piece)
+        validJumpMoves = self.get_valid_jump_moves(player, piece)
+        actionIsSingle = action in validSingleMoves
+        actionIsJump = action in validJumpMoves
+        assert()
+        if action in validSingleMoves:
+            print(f"{action} is a single move")
+
+
+
+        if action in validJumpMoves:
+            print(f"{action} is a jump move")
+
+        if action in moves[piece]:
+            self.pieces[playerInd, pieceInd] = action
+
+
+
+        # TODO need to implement turn based rotating on single move
+        #   as well as multi-move capabilities based on jump move
+
+

@@ -10,3 +10,5 @@ A C++ implementation of Chinese checkers
 [Strongly Solving Chinese Checkers](https://webdocs.cs.ualberta.ca/~nathanst/papers/sturtevant2019chinesecheckers.pdf)
 
 [6.1 Chinese Checkers - Max^n play performs poor](https://webdocs.cs.ualberta.ca/~nathanst/papers/comparison_algorithms.pdf)
+
+[Planning with Monte Carlo Reference](https://deeplearning.neuromatch.io/tutorials/W3D5_ReinforcementLearningForGames/student/W3D5_Tutorial4.html)
