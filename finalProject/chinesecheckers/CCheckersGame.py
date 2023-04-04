@@ -18,32 +18,32 @@ class CCheckersGame(Game):
         self.n = n
 
     def getinitBoard(self):
-        board = Board(self.n)
-        return np.array(b.pieces)
-        # init = [["1", " ", " ", " ", " ", " "],
-        #        ["1", "1", " ", " ", " ", " "],
-        #        ["1", "1", "1", " ", " ", " "],
-        #        ["-", "-", "-", "-", " ", " "],
-        #        ["-", "-", "-", "-", "-", " "],
-        #        ["-", "-", "-", "-", "-", "-"],
-        #        ["-", "-", "-", "-", "-", " "],
-        #        ["-", "-", "-", "-", " ", " "],
-        #        ["2", "2", "2", " ", " ", " "],
-        #        ["2", "2", " ", " ", " ", " "],
-        #        ["2", " ", " ", " ", " ", " "]]
+        '''TODO
+            Compact code by using tuples of coordinates -> map to board on print
+            As opposed to string layout of board + updating per move
+            |
+            Hard code/precompute all moves at every pit
+                Prune off if piece in pit
+                    But also hardcode if piece can jump + prune if not possible
+            |
+            Results in 12 possible moves being hardcoded per pit
+        '''
+        board = Board()
+        return np.array(board.pieces)  # In array form for neural network
 
     def getBoardSize(self):
-        return (self.n, self.n)  # return tuple
+        return self.n
 
     def getActionSize(self):
-        return self.n*self.n + 1
+        return 6  # Constant for number of possible moves from 1 pit
 
     def getNextState(self, board, player, action):
         # For player taking an action on board
         # TODO Need to check if action is valid
-        if action == self.n*self.n:
+        if action == 36:
+            board.execute_move(player, action)
             return (board, -player)
-        b = Board(self.n)
+        b = Board()
         b.pieces = np.copy(board)
         move = 0  # TODO
 
@@ -96,7 +96,7 @@ class CCheckersGame(Game):
                        form of the board and the corresponding pi vector. This
                        is used when training the neural network from examples.
         """
-        pass
+        return []
 
     def stringRepresentation(self, board):
         """
