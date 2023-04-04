@@ -4,9 +4,6 @@ class Game():
 
     """
 
-    # TODO NEED TO REIMPLEMENT GAME
-
-
 
     def __init__(self):
         pass
