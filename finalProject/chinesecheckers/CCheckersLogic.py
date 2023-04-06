@@ -330,11 +330,9 @@ class Board():
         validJumpMoves = self.get_valid_jump_moves(player, piece)
         actionIsSingle = action in validSingleMoves
         actionIsJump = action in validJumpMoves
-        assert()
+        assert(actionIsSingle is not actionIsJump)
         if action in validSingleMoves:
             print(f"{action} is a single move")
-
-
 
         if action in validJumpMoves:
             print(f"{action} is a jump move")
@@ -342,9 +340,15 @@ class Board():
         if action in moves[piece]:
             self.pieces[playerInd, pieceInd] = action
 
-
-
         # TODO need to implement turn based rotating on single move
         #   as well as multi-move capabilities based on jump move
 
+        if actionIsSingle:
+            return True  # Return True if changePlayers
+        else:
+            nextJumps = self.get_valid_jump_moves(player, piece)
+            if len(nextJumps) == 0:
+                return True
+            else:
+                return False
 
