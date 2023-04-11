@@ -1,5 +1,7 @@
 import sys
 import os
+import logging
+import coloredlogs
 
 def printHelp():
     print("usage: run.py [-h] ... [-c cmd | -m mod | file | -] [arg] ...\n"
@@ -45,3 +47,8 @@ if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")
     # if '-help' in sys.argv or '-h' in sys.argv or '--help' in sys.argv:
     #     printHelp()
+
+
+
+
+

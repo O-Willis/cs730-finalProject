@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chinese Checkers 2 Player Board</title>
+    <script src="game.js"></script>
+    <style>
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>-->
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="temp.js"></script>
+<script>
+    window.addEventListener("load", function () {
+        window.game = new Game();
+    });
+</script>
+</body>
+</html>

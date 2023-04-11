@@ -1,17 +1,18 @@
 import logging
 
 import tqdm as tqdm  # Shows progress bars for loops
+from board import *
 
 log = logging.getLogger(__name__)  # TODO need to implement custom __name__ for game
 
 class Arena():
-
 
     def __init__(self, player1, player2, game, display=None):
         self.player1 = player1
         self.player2 = player2
         self.game = game
         self.display = display
+        self.display_surface = init_board()
 
     def playGame(self, verbose=False):  # TODO Need to understand how turn taking & action taking works!!!
         if (self.display):

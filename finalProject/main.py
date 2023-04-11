@@ -4,12 +4,15 @@
 ####################################
 
 import logging
+import coloredlogs
 
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
 #from chinesecheckers.pytorch.NNet import
 from .utils import *
 
 log = logging.getLogger(__name__)
+
+coloredlogs.install(level='INFO')
 
 """
 dotDict allows custom arguments to be inserted into program for NeuralNet
@@ -32,7 +35,16 @@ args = dotdict({
 })
 
 def main():
-    curGame = Game
+    curGame = Game(6)
+
+    #log.info('Loading %s...', nn.__name__)
+    #nnet = nn(curGame)
+
+    # log.info('Loading the Coach...')
+    # c = Coach(curGame, nnet, args)
+    
+    # log.info("Loading 'trainExamples' from file...")
+    # c.learn()
 
     # TODO load NeuralNet of curGame
     # TODO create Coach class w/ params (curGame, nnet, args
