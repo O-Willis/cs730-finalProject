@@ -96,24 +96,24 @@ class Board():
             [5, 12, 24],            # mid 14
             [6, 17, 26],               # edge 15
             [7, 18, 27],   # mid 16
-            [6, 8, 15, 19, 26, 28],   # mid 17
-            [7, 9, 16, 20, 27, 29],   # mid 18
-            [8, 17, 28],   # mid 19
-            [9, 18, 29],               # edge 20
-            [11, 23, 30],           # edge 21
-            [10, 12, 24, 31],   # mid 22
+            [6, 8, 15, 19, 26, 28],     # mid 17
+            [7, 9, 16, 20, 27, 29],     # mid 18
+            [8, 17, 28],                # mid 19
+            [9, 18, 29],                # edge 20
+            [11, 23, 30],               # edge 21
+            [10, 12, 24, 31],           # mid 22
             [11, 13, 21, 25, 30, 32],   # mid 23
-            [12, 14, 22, 31],   # mid 24
-            [13, 23, 32],       # edge 25
+            [12, 14, 22, 31],           # mid 24
+            [13, 23, 32],               # edge 25
             [15, 17, 28, 33],           # edge 26
-            [16, 18, 29, 34],   # mid 27
-            [17, 19, 26, 33],   # mid 28
-            [18, 20, 27, 34],       # edge 29
+            [16, 18, 29, 34],           # mid 27
+            [17, 19, 26, 33],           # mid 28
+            [18, 20, 27, 34],           # edge 29
             [21, 23, 32, 35],           # edge 30
-            [22, 24],           # mid 31
+            [22, 24],                   # mid 31
             [23, 25, 30, 35],           # edge 32
-            [26, 28],           # edge 33
-            [27, 29],           # edge 34
+            [26, 28],                   # edge 33
+            [27, 29],                   # edge 34
             [30, 32]                    # edge 35
         ]
 
@@ -313,9 +313,7 @@ class Board():
         return validJumpMoves
 
     def execute_move(self, player, piece, action):  # TODO might need to change framework to work with new parameters
-        """
-        Performs the given move on the board.
-        """
+        """ Performs the given move on the board. """
         moves = self.get_legal_moves(player)
         # Should never call on execute if no moves are able to be made
         assert len(list(moves)) > 0
@@ -330,7 +328,7 @@ class Board():
         validJumpMoves = self.get_valid_jump_moves(player, piece)
         actionIsSingle = action in validSingleMoves
         actionIsJump = action in validJumpMoves
-        assert()
+        assert(False, actionIsSingle and actionIsJump)
         if action in validSingleMoves:
             print(f"{action} is a single move")
 
@@ -343,6 +341,7 @@ class Board():
             self.pieces[playerInd, pieceInd] = action
 
 
+        # TODO Edge case if player has move but chooses not to make more moves
 
         # TODO need to implement turn based rotating on single move
         #   as well as multi-move capabilities based on jump move
