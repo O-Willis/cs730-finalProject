@@ -69,7 +69,14 @@ class CCheckersGame(Game):
                small non-zero value for draw.
 
         """
-        pass
+        board = Board(self.n)
+        board.pieces = np.copy(board)
+        if board.is_game__over(player):  # Player can be represented by either 1 or -1
+            return 1
+        if board.is_game__over(-player):
+            return -1
+        else:
+            return 0
 
     def getCanonicalForm(self, board, player):
         """

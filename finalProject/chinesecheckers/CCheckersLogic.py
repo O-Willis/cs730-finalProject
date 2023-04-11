@@ -36,7 +36,7 @@ import numpy as np
 
 class Board():
     # directions as (x,y) offsets
-    __directions = [()]
+    directions = [()]
 
     def __init__(self):
         """Initial configuration of the board"""
@@ -119,6 +119,7 @@ class Board():
 
         self.n = 6  # Number of pieces
         # Initialize empty board
+        self.goal = [None] * 6
         self.pieces = [None] * self.n
         for i in range(self.n):
             self.pieces[i] = [0] * self.n
@@ -126,7 +127,9 @@ class Board():
         self.pieces = np.zeros((2, 6), dtype=np.int)
         #  [0,:] splices array and all column values become assigned
         self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
+        self.goal[0, :] = 35 - np.array([0, 1, 2, 3, 4, 5])
         self.pieces[1, :] = 35 - np.array([0, 1, 2, 3, 4, 5])
+        self.goal[1, :] = [0, 1, 2, 3, 4, 5]
 
     def __getitem__(self, index):
         return self.pieces[index]
@@ -352,3 +355,10 @@ class Board():
             else:
                 return False
 
+
+    def is_game__over(self, player):
+        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        if self.goal[playerInd, :] == self.pieces[playerInd, :]:
+            return True
+        else:
+            return False
