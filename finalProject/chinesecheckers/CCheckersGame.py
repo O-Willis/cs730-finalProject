@@ -40,7 +40,7 @@ class CCheckersGame(Game):
     def getNextState(self, board, player, action):
         # For player taking an action on board
         # TODO Need to check if action is valid
-        if action == 36:
+        if action == self.n*self.n:
             board.execute_move(player, action)
             return (board, -player)
         b = Board()
@@ -57,7 +57,7 @@ class CCheckersGame(Game):
                         moves that are valid from the current board and player,
                         0 for invalid moves
         """
-        pass
+        return board.get_legal_moves(player)
 
     def getGameEnded(self, board, player):
         """
@@ -91,7 +91,8 @@ class CCheckersGame(Game):
                             board as is. When the player is black, we can invert
                             the colors and return the board.
         """
-        pass
+        playerInd = 0 if player == 1 else 1
+        return board  # Returns the np.array as the player's state
 
     def getSymmetries(self, board, pi):
         """

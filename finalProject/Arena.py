@@ -1,5 +1,5 @@
 import logging
-
+import random
 import tqdm as tqdm  # Shows progress bars for loops
 from board import *
 
@@ -18,7 +18,8 @@ class Arena():
         if (self.display):
             print(f"Current game:\n{self.game}")
         players = [self.player1, None, self.player2]
-        curPlayer = 1  # Player 1 will always go first
+        curPlayer = random.randint(1, 2)
+        # curPlayer = 1  # Player 1 will always go first
         board = self.game.getInitBoard()
         itNum = 0
         while self.game.getGameEnded(board, curPlayer) == 0:
