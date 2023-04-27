@@ -13,9 +13,6 @@ from board import *  # Contains gui elements
 from Arena import Arena
 from utils import *
 
-color_light = (202, 203, 213 )
-color_dark = (2, 6, 145)
-
 def TwoPlayers():
     pygame.init()
     import numpy

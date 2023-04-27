@@ -1,8 +1,9 @@
+from __future__ import print_function
 import sys
-import numpy as np
-sys.path.append('../..')
-from ..Game import Game
+sys.path.append('..')
+from Game import Game
 from .CCheckersLogic import Board
+import numpy as np
 
 class CCheckersGame(Game):
     pit_content = {
@@ -14,8 +15,14 @@ class CCheckersGame(Game):
     @staticmethod
     def getPit(piece):
         return CCheckersGame.pit_content[piece]
+
     def __init__(self, n):
+        self.board = Board()
         self.n = n
+
+    def getStringRepresentation(self):
+        board = Board(self.n)
+        return str(board)
 
     def getinitBoard(self):
         '''TODO
@@ -114,4 +121,15 @@ class CCheckersGame(Game):
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
         """
-        pass
+        return str(board)
+
+    def getScore(self, board, player):
+        board = Board(self.n)
+        board.pieces = np.copy(board)
+        return board.countDiff(player)  # TODO NEED TO IMPLEMENT
+
+    @staticmethod
+    def display(board):
+        print("----------------------------------------")
+        print(str(board))
+        print("----------------------------------------")

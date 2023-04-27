@@ -11,7 +11,6 @@ from chinesecheckers.CCheckersGame import CCheckersGame as Game
 from .utils import *
 
 log = logging.getLogger(__name__)
-
 coloredlogs.install(level='INFO')
 
 """
@@ -35,7 +34,9 @@ args = dotdict({
 })
 
 def main():
-    curGame = Game(6)
+    log.info('Loading %s...', Game.__name__)
+    game = Game(6)
+    print(game.getStringRepresentation())
 
     #log.info('Loading %s...', nn.__name__)
     #nnet = nn(curGame)

@@ -40,28 +40,36 @@ if __name__ == "__main__":
                     position = pg.mouse.get_pos()
                     # print(position)
 
-                    print(f"Previous player moves: {board.pieces[player_turn]}")
+                    pturn = 0 if player_turn == 1 else 1
+                    print(f"Previous player moves: {board.pieces[pturn]}")
                     if turn_num == 0:
                         board.execute_move(1, 1, 8)
                     elif turn_num == 1:
                         board.execute_move(2, 1, 27)
                     elif turn_num == 2:
-                        board.execute_move(2, 5, 12)
+                        board.execute_move(1, 5, 12)
                     elif turn_num == 3:
-                        board.execute_move(1, 5, 23)
+                        board.execute_move(2, 5, 23)
                     else:
                         turn_num = 0
                         board = Board()
 
                     print(f"Click num: {turn_num}")
-                    print(f"Post player moves: {board.pieces[player_turn]}")
+                    print(f"Post player moves: {board.pieces[pturn]}")
                     turn_num += 1
 
                     player_turn = (player_turn % 2) + 1
+                    selected_pit = -1
+                    highlighted_moves = set()
 
                     highlighted_moves, temp_select = draw_board(display_surface, board, player_turn,
                                                                 highlighted_moves, selected_pit)
+                    print(f"selected pit: {selected_pit}")
+                    print(f"highlighted moves: {highlighted_moves}")
                     pg.display.update()
+
+                    if (turn_num > 3):
+                        print("======================================")
 
                 if event.type == pg.KEYDOWN:
                     if event.key == ord("r"):

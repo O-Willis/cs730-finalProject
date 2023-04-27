@@ -7,7 +7,7 @@ from chinesecheckers.CCheckersLogic import Board
 # from Arena import Arena
 
 def printHelp():
-    print("usage: run.py [-h] ... [-c cmd | -m mod | file | -] [arg] ...\n"
+    print("usage: backend_game_test.py [-h] ... [-c cmd | -m mod | file | -] [arg] ...\n"
           "Options and arguments (and corresponding environment variables):")
 
     print("optional arguments:")
