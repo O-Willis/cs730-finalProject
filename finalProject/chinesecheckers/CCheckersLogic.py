@@ -38,7 +38,7 @@ class Board():
     # directions as (x,y) offsets
     directions = [()]
 
-    def __init__(self):
+    def __init__(self, n):
         """Initial configuration of the board"""
         self.moves = [
             [1, 2],                     # edge 0
@@ -117,7 +117,7 @@ class Board():
             [30, 32]                    # edge 35
         ]
 
-        self.n = 6  # Number of pieces
+        self.n = n  # Number of pieces
         # Initialize empty board
         self.pieces = [None] * self.n
         self.goal = [None] * self.n
@@ -211,6 +211,7 @@ class Board():
                 if isEnd or cur == " ":
                     out += "\n"
                     break
+        out += "\n"
         return out
 
     def get_legal_moves(self, player):
@@ -410,8 +411,8 @@ class Board():
 
     def is_game__over(self, player):
         playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
-        return False
-        # if self.goal[playerInd, :] == self.pieces[playerInd, :]:
-        #     return True
-        # else:
-        #     return False
+        for i in range(6):
+            curIndex = self.pieces[playerInd, i]
+            if not np.isin(curIndex, self.goal[playerInd]):  # This is the current checking for the main case
+                return False
+        return True  # TODO Need to check if other player is blocking the way, preventing a piece from being moved

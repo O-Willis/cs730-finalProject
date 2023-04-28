@@ -2,6 +2,7 @@ import logging
 import random
 import tqdm as tqdm  # Shows progress bars for loops
 from board import *
+from finalProject.chinesecheckers.CCheckersGame import *
 
 log = logging.getLogger(__name__)  # TODO need to implement custom __name__ for game
 

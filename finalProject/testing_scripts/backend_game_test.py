@@ -3,7 +3,7 @@ import os
 import random
 import logging
 import coloredlogs
-from chinesecheckers.CCheckersLogic import Board
+from finalProject.chinesecheckers.CCheckersLogic import Board
 # from Arena import Arena
 
 def printHelp():
@@ -69,8 +69,11 @@ if __name__ == "__main__":
             print(f"CURRENT PLAYER'S TURN: {player_turn}")
 
             print("[=========== Your available moves ===========]")
+            temp_turn = 0 if player_turn == 1 else 1
+            print(board.pieces[temp_turn])
             print(board.get_legal_moves(player_turn))
-            print("========================================")
+            # print("============= Current Indexes ================")
+            print("==========================================")
 
             curTurn = player_turn
 

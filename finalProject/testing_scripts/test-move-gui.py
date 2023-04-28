@@ -1,4 +1,4 @@
-from chinesecheckers.CCheckersLogic import Board
+from finalProject.chinesecheckers.CCheckersLogic import Board
 from pygame.constants import *
 from finalProject.board import *
 import pygame

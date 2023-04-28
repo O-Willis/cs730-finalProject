@@ -2,7 +2,7 @@ import logging
 
 import coloredlogs
 
-from CCheckersLogic import Board
+from finalProject.chinesecheckers.CCheckersLogic import Board
 #from ..Arena import Arena
 #from ..utils import *
 
@@ -47,6 +47,4 @@ board.execute_move(1, 5, 12)
 # print(board2.get_legal_moves(1))
 # if (board2.is_game__over(1)):
 #     print("Your winner!")
-
-
 

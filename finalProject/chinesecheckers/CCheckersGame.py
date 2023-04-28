@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 sys.path.append('..')
-from Game import Game
+from finalProject.Game import Game
 from .CCheckersLogic import Board
 import numpy as np
 
@@ -17,14 +17,13 @@ class CCheckersGame(Game):
         return CCheckersGame.pit_content[piece]
 
     def __init__(self, n):
-        self.board = Board()
         self.n = n
 
     def getStringRepresentation(self):
         board = Board(self.n)
         return str(board)
 
-    def getinitBoard(self):
+    def getInitBoard(self):
         '''TODO
             Compact code by using tuples of coordinates -> map to board on print
             As opposed to string layout of board + updating per move
@@ -35,8 +34,8 @@ class CCheckersGame(Game):
             |
             Results in 12 possible moves being hardcoded per pit
         '''
-        board = Board()
-        return np.array(board.pieces)  # In array form for neural network
+        b = Board(self.n)
+        return np.array(b.pieces)  # In array form for neural network
 
     def getBoardSize(self):
         return self.n
@@ -76,11 +75,11 @@ class CCheckersGame(Game):
                small non-zero value for draw.
 
         """
-        board = Board(self.n)
-        board.pieces = np.copy(board)
-        if board.is_game__over(player):  # Player can be represented by either 1 or -1
+        b = Board(self.n)
+        b.pieces = np.copy(board)
+        if b.is_game__over(player):  # Player can be represented by either 1 or -1
             return 1
-        if board.is_game__over(-player):
+        if b.is_game__over(-player):
             return -1
         else:
             return 0
@@ -99,7 +98,7 @@ class CCheckersGame(Game):
                             the colors and return the board.
         """
         playerInd = 0 if player == 1 else 1
-        return board  # Returns the np.array as the player's state
+        return player*board  # Returns the np.array as the player's state
 
     def getSymmetries(self, board, pi):
         """
