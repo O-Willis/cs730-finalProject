@@ -87,7 +87,6 @@ if __name__ == "__main__":
 
                     if piece < 0 or piece > 6:
                         print("Incorrect input!!")
-                        userInput = -1
 
                     while userMove not in board.get_legal_moves(player_turn)[piece]:
                         print(f"current move: {piece} to {userMove}")

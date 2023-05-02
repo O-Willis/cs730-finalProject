@@ -2,7 +2,6 @@ import logging
 import random
 import tqdm as tqdm  # Shows progress bars for loops
 from board import *
-from finalProject.chinesecheckers.CCheckersGame import *
 
 log = logging.getLogger(__name__)  # TODO need to implement custom __name__ for game
 
@@ -18,29 +17,31 @@ class Arena():
     def playGame(self, verbose=False):  # TODO Need to understand how turn taking & action taking works!!!
         if (self.display):
             print(f"Current game:\n{self.game}")
-        players = [self.player1, None, self.player2]
-        curPlayer = random.randint(1, 2)
+        players = [self.player1, self.player2]
+        curPlayer = -1 if random.randint(1, 2) == 1 else 1
         # curPlayer = 1  # Player 1 will always go first
         board = self.game.getInitBoard()
         itNum = 0
         while self.game.getGameEnded(board, curPlayer) == 0:
+            playerInd = 0 if curPlayer == 1 else 1
             itNum += 1
             if verbose:  # Verbose represents debugging
                 assert self.display
-                print("Turn", str(itNum), "Player ", str(curPlayer))
-                self.display(board)
-            action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))
+                print("Turn", str(itNum), "Player ", str(1) if curPlayer == 1 else str(2))
+                self.display(str(board))
+            temp = self.game.getCanonicalForm(board, curPlayer)
+            action = players[playerInd](self.display_surface, temp, curPlayer)
 
-            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
+            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), curPlayer)
 
-            if valids[action] == 0:  # TODO recheck the logic here. POSSIBLE FOR 0
+            if action[1] not in valids[action[0]]:  # TODO recheck the logic here. POSSIBLE FOR 0
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
                 assert valids[action] > 0
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
-            if verbose:
-                assert self.display
-                print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
+        if verbose:
+            assert self.display
+            print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
     def playGames(self, num, verbose=False):

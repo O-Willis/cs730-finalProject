@@ -35,7 +35,7 @@ class CCheckersGame(Game):
             Results in 12 possible moves being hardcoded per pit
         '''
         b = Board(self.n)
-        return np.array(b.pieces)  # In array form for neural network
+        return b  # In array form for neural network
 
     def getBoardSize(self):
         return self.n
@@ -46,12 +46,13 @@ class CCheckersGame(Game):
     def getNextState(self, board, player, action):
         # For player taking an action on board
         # TODO Need to check if action is valid
-        if action == self.n*self.n:
-            board.execute_move(player, action)
+        if action == [-1, -1]:
             return (board, -player)
-        b = Board()
-        b.pieces = np.copy(board)
-        move = 0  # TODO
+        b = Board(self.n)
+        b.pieces = np.copy(board.pieces)
+        piece, move = action
+        b.execute_move(player, piece, move)
+        return (b, -player)
 
     def getValidMoves(self, board, player):
         """
@@ -63,7 +64,31 @@ class CCheckersGame(Game):
                         moves that are valid from the current board and player,
                         0 for invalid moves
         """
-        return board.get_legal_moves(player)
+        valids = [0]*self.getActionSize()
+        b = Board(self.n)
+        b.pieces = np.copy(self.getNumpyFromCannonical(board))
+        legal_moves = b.get_legal_moves(player)
+        if len(legal_moves) == 0:
+            valids[-1]=1  # TODO not sure what this does!!!
+            return np.array(valids)
+        return legal_moves
+
+    def getNumpyFromCannonical(self, board):
+        index = [None] * self.n
+        for i in range(0, self.n):
+            index[i] = [0] * self.n
+        index = np.zeros((2, 6), dtype=np.int)
+        counter_p2 = 0
+        counter_p1 = 0
+        for i in range(0, 36):
+            if board[i] == 1:
+                index[1, counter_p2] = i
+                counter_p2 += 1
+            elif board[i] == -1:
+                index[0, counter_p1] = i
+                counter_p1 += 1
+
+        return index
 
     def getGameEnded(self, board, player):
         """
@@ -76,7 +101,7 @@ class CCheckersGame(Game):
 
         """
         b = Board(self.n)
-        b.pieces = np.copy(board)
+        b.pieces = np.copy(board.pieces)
         if b.is_game__over(player):  # Player can be represented by either 1 or -1
             return 1
         if b.is_game__over(-player):
@@ -97,8 +122,10 @@ class CCheckersGame(Game):
                             board as is. When the player is black, we can invert
                             the colors and return the board.
         """
-        playerInd = 0 if player == 1 else 1
-        return player*board  # Returns the np.array as the player's state
+        map = np.zeros((36))
+        map[board[0]] = -1
+        map[board[1]] = 1
+        return map  # Returns the np.array as the player's state
 
     def getSymmetries(self, board, pi):
         """
@@ -130,5 +157,5 @@ class CCheckersGame(Game):
     @staticmethod
     def display(board):
         print("----------------------------------------")
-        print(str(board))
+        print(str(board), end="")
         print("----------------------------------------")

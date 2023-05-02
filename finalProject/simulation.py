@@ -1,7 +1,7 @@
 import Arena
 from MCTS import MCTS
-from chinesecheckers.CCheckersGame import CCheckersGame as Game
 from chinesecheckers.CCheckersPlayers import *
+from chinesecheckers.CCheckersGame import CCheckersGame as Game
 # from chinesecheckers.pytorch.NNet import NNetWrapper as Net
 
 import numpy as np
@@ -13,8 +13,8 @@ from board import *  # Contains gui elements
 
 Human_Against_AI = True  # TODO Add logic for p v p or p vs AI
 game = Game(6)
-rp = RandPlayer(game).play
 humanPlayer = HumanPlayer(game).play
+rp = RandPlayer(game).play
 
 n1 = 0
 # n1 = NNet(game)

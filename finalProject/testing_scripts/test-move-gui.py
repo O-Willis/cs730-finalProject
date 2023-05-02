@@ -9,7 +9,7 @@ START_TURN = 1
 
 if __name__ == "__main__":
 
-    board = Board()
+    board = Board(6)
     newStr = str(board)
     print(str(board))
     display_surface = init_board()
@@ -52,7 +52,7 @@ if __name__ == "__main__":
                         board.execute_move(2, 5, 23)
                     else:
                         turn_num = 0
-                        board = Board()
+                        board = Board(6)
 
                     print(f"Click num: {turn_num}")
                     print(f"Post player moves: {board.pieces[pturn]}")

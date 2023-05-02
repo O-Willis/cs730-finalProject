@@ -61,8 +61,8 @@ def draw_board(display, board, player_turn, highlighted, selected_pit):
     x_coord = WINDOW_WIDTH/2
 
     ######  NOTE: FOR AI WE NEED TO ADJUST GUI FOR PLAYER TURN
-    player_turn = 0 if player_turn == 1 else 1
-    pieceIndexes = board.pieces[player_turn]  # To get the board indexes of a player's pieces
+    player_turn = 0 if player_turn == -1 else 1
+    pieceIndexes = board[player_turn]  # To get the board indexes of a player's pieces
 
     rowCounter = 0
     for pit in range(0, 36):
@@ -137,16 +137,16 @@ def highlight_selected_moves(board, display_surface, pturn, selected_pit, highli
 # Not entirely sure how this method is being used
 # NOTE: DOES NOT INTERFERE WITH EMPTY CELL COLORING
 def color_destination(board, display_surface, x_coord, y_coord, pit):
-    if pit in board.pieces[0]:  # If the pit matches the player 1's piece index
+    if pit in board[0]:  # If the pit matches the player 1's piece index
         pg.draw.circle(display_surface, PLAYER1_RED_DEST, (x_coord, y_coord), CIRCLE_RADIUS, 0)
-    if pit in board.pieces[1]:  # If the pit matches the player 2's piece index
+    if pit in board[1]:  # If the pit matches the player 2's piece index
         pg.draw.circle(display_surface, PLAYER2_GREEN_DEST, (x_coord, y_coord), CIRCLE_RADIUS, 0)
 
 def color_new_circle(board, board_value, display_surface, player_turn, highlighted_moves, x_coord, y_coord):
     # print(f"New piece index for {player_turn} {board.pieces[player_turn]}")
-    if board_value in board.pieces[0]:
+    if board_value in board[0]:
         pg.draw.circle(display_surface, PLAYER1_RED, (x_coord, y_coord), CIRCLE_RADIUS, 0)
-    elif board_value in board.pieces[1]:
+    elif board_value in board[1]:
         pg.draw.circle(display_surface, PLAYER2_GREEN, (x_coord, y_coord), CIRCLE_RADIUS, 0)
     else:
         pg.draw.circle(display_surface, HIGHLIGHT if board_value in list(highlighted_moves) else EMPTY_CELL,
@@ -154,9 +154,9 @@ def color_new_circle(board, board_value, display_surface, player_turn, highlight
 
 def color_circle(board, board_value,display_surface, highlighted_moves, x_coord, y_coord):
     # print(f"Current coordinates for {board_value}: [{x_coord}, {y_coord}]")
-    if board_value in board.pieces[0]:
+    if board_value in board[0]:
         pg.draw.circle(display_surface, PLAYER1_RED, (x_coord, y_coord), CIRCLE_RADIUS, 0)
-    elif board_value in board.pieces[1]:
+    elif board_value in board[1]:
         pg.draw.circle(display_surface, PLAYER2_GREEN, (x_coord, y_coord), CIRCLE_RADIUS, 0)
     else:
         pg.draw.circle(display_surface, HIGHLIGHT if board_value in list(highlighted_moves) else EMPTY_CELL,

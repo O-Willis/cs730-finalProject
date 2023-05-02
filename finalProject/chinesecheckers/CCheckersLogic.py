@@ -129,8 +129,8 @@ class Board():
         self.goal = np.zeros((2,6), dtype=np.int)
         #  [0,:] splices array and all column values become assigned
         self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
-        self.pieces[1, :] = 35 - np.array([0, 1, 2, 3, 4, 5])
-        self.goal[0, :] = 35 - np.array([0, 1, 2, 3, 4, 5])
+        self.pieces[1, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
+        self.goal[0, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
         self.goal[1, :] = self.pieces[0, :]
 
     def __getitem__(self, index):
@@ -194,8 +194,8 @@ class Board():
                 isEnd = c == len(line) - 1
                 cur = line[c]
                 if cur == "-":
-                    tmpP1 = index == self.pieces[0,:]
-                    tmpP2 = index == self.pieces[1,:]
+                    tmpP2 = index == self.pieces[0,:]
+                    tmpP1 = index == self.pieces[1,:]
                     arr1 = np.array([0, 1, 2, 3, 4, 5])
                     if np.sum(tmpP1):
                         out += f" 1_{arr1[tmpP1].item()}  "
@@ -211,7 +211,7 @@ class Board():
                 if isEnd or cur == " ":
                     out += "\n"
                     break
-        out += "\n"
+        # out += "\n"
         return out
 
     def get_legal_moves(self, player):
@@ -224,7 +224,7 @@ class Board():
         # Indicates if the spot is occupied
 
         # Get all pits with pieces of given color
-        playerInd = 0 if player == 1 else 1
+        playerInd = 1 if player == 1 else 0
         for pit in range(self.n):
             closed_list = set()
             validMoves = self.method_name(closed_list, map, pit, playerInd, True)
@@ -302,7 +302,7 @@ class Board():
         """
         map = np.zeros((36))
         map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
         pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
         # print(f"Current piece's board index: {pieceInd}")
         singleMoves = np.array(self.moves[pieceInd])
@@ -312,14 +312,12 @@ class Board():
     def get_valid_jump_moves(self, player, piece):
         map = np.zeros((36))
         map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
         pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
         jumpMoves = np.array(self.jumpMoves[pieceInd])
         singleMoves = np.array(self.moves[pieceInd])
         singleInvalidMoves = singleMoves[map[singleMoves] != 0]  # represents invalid moves
         validJumpMoves = []
-        if player == 1 and piece == 5:
-            x = 0
         # If there is an intersection between a single's valid move
         for invalidMove in list(singleInvalidMoves):
             potentialJumpMoves = np.array(self.moves[invalidMove])
@@ -340,7 +338,7 @@ class Board():
         """
         map = np.zeros((36))
         map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
         validSingleMoves = self.get_valid_single_moves(player, piece)
         validJumpMoves = self.get_valid_jump_moves(player, piece)
         actionIsSingle = action in validSingleMoves
@@ -374,7 +372,7 @@ class Board():
 
         map = np.zeros((36))
         map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
         orig_piece_index = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
 
         validSingleMoves = self.get_valid_single_moves(player, piece)
@@ -410,7 +408,7 @@ class Board():
 
 
     def is_game__over(self, player):
-        playerInd = 0 if player == 1 else 1  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
         for i in range(6):
             curIndex = self.pieces[playerInd, i]
             if not np.isin(curIndex, self.goal[playerInd]):  # This is the current checking for the main case
