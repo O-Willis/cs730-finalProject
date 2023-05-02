@@ -125,8 +125,8 @@ class Board():
             self.pieces[i] = [0] * self.n
             self.goal[i] = [0] * self.n
 
-        self.pieces = np.zeros((2, 6), dtype=np.int)
-        self.goal = np.zeros((2,6), dtype=np.int)
+        self.pieces = np.zeros((2, 6), dtype=int)
+        self.goal = np.zeros((2,6), dtype=int)
         #  [0,:] splices array and all column values become assigned
         self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
         self.pieces[1, :] = 35 - np.array([5, 4, 3, 2, 1, 0])

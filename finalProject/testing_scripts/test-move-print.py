@@ -21,30 +21,31 @@ from finalProject.chinesecheckers.CCheckersLogic import Board
 # p1
 #
 
-board = Board()
-newStr = str(board)
-print(str(board))
-print()
-
-board.execute_move(2, 1, 27)
-print(str(board))
-board.execute_move(1, 1, 8)
-print(str(board))
-board.execute_move(2, 5, 23)
-print(str(board))
-print(board.get_legal_moves(1))
-board.execute_move(1, 5, 12)
-
-
-# board2 = Board()
-# newStr2 = str(board2)
-# print(str(board2))
+# board = Board(6)
+# newStr = str(board)
+# print(str(board))
 # print()
 #
-# print(board2.get_legal_moves(1))
-# board2.execute_move(1, 2, 7)
-# print(str(board2))
-# print(board2.get_legal_moves(1))
+# board.execute_move(2, 1, 27)
+# print(str(board))
+# board.execute_move(1, 1, 8)
+# print(str(board))
+# board.execute_move(2, 5, 23)
+# print(str(board))
+# print(board.get_legal_moves(1))
+# board.execute_move(1, 5, 12)
+
+
+board2 = Board(6)
+newStr2 = str(board2)
+print(str(board2))
+print()
+
+print(board2.get_legal_moves(1))
+board2.execute_move(1, 2, 28)
+print(str(board2))
+print(board2.get_legal_moves(1))
+
 # if (board2.is_game__over(1)):
 #     print("Your winner!")
 
