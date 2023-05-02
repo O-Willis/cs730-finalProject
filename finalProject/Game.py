@@ -66,7 +66,7 @@ class Game():
         """
         pass
 
-    def getNumpyFromCannonical(self, board):
+    def getPlayerPieces(self, board):
         pass
 
     def getCanonicalForm(self, board, player):

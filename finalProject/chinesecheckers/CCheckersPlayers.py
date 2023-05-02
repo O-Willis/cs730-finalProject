@@ -77,17 +77,46 @@ class RandPlayer:
 
     def __init__(self, game):
         self.game = game
+        self.threshold = 10
 
-    def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
-        valids = self.game.getValidMoves(board, 1)
-        while valids[a] != 1:
-            a = np.random.randint(self.game.getActionSize())
-        return a
+    def play(self, display_surface, board, player):
+        curPlayer = 0 if player == -1 else 1
+        valid = self.game.getValidMoves(board, player)
+        print(f"Valid moves: {valid}")
+        chanceNum = np.random.randint(100)
+        pieces = np.copy(self.game.getPlayerPieces(board))
+        piece = np.random.randint(self.game.getActionSize())
+        while len(valid[piece]) == 0:  # ensure that the valid array is not empty at index 'piece'
+            piece = np.random.randint(self.game.getActionSize())
+        moveInd = np.random.randint(len(valid[piece]))
+        if player == 1:
+            if chanceNum <= self.threshold:
+                return [piece, valid[piece][moveInd]]
+            else:
+                while not (valid[piece][moveInd] <= pieces[curPlayer, piece]):
+                    piece = np.random.randint(self.game.getActionSize())
+                    while len(valid[piece]) == 0:
+                        piece = np.random.randint(self.game.getActionSize())
+                    moveInd = np.random.randint(len(valid[piece]))
+                    chanceNum = np.random.randint(100)
+                    if chanceNum <= self.threshold:
+                        return [piece, valid[piece][moveInd]]
+        else:
+            if chanceNum <= self.threshold:
+                return [piece, valid[piece][moveInd]]
+            while not (valid[piece][moveInd] >= pieces[curPlayer, piece]):
+                piece = np.random.randint(self.game.getActionSize())
+                while len(valid[piece]) == 0:
+                    piece = np.random.randint(self.game.getActionSize())
+                moveInd = np.random.randint(len(valid[piece]))
+                chanceNum = np.random.randint(100)
+                if chanceNum <= self.threshold:
+                    return [piece, valid[piece][moveInd]]
+        return [piece, valid[piece][moveInd]]
 
 class MinMaxPlayer:
 
-    def __int__(self, game):
+    def __init__(self, game):
         self.game = game
 
     def play(self, board):
@@ -96,7 +125,8 @@ class MinMaxPlayer:
 
 
 class MCTSPlayer:
-    def __int__(self, game):
+
+    def __init__(self, game):
         self.game = game
 
     def play(self, board):

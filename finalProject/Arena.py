@@ -38,9 +38,15 @@ class Arena():
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
                 assert valids[action] > 0
+            if verbose:
+                assert self.display
+                print(f"Moving {str(action[0])} to index {action[1]}")
+            if itNum == 70 or itNum == 80 or itNum == 90:
+                x = 0
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
         if verbose:
             assert self.display
+            self.display(str(board))
             print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
