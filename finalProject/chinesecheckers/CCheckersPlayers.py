@@ -1,5 +1,5 @@
 import numpy as np
-from finalProject.board import *
+from finalProject.gui import *
 import pygame as pg
 import sys
 import time
@@ -80,46 +80,64 @@ class RandPlayer:
         self.threshold = 10
 
     def play(self, display_surface, board, player):
-        curPlayer = 0 if player == -1 else 1
         valid = self.game.getValidMoves(board, player)
-        print(f"Valid moves: {valid}")
         chanceNum = np.random.randint(100)
-        pieces = np.copy(self.game.getPlayerPieces(board))
-        piece = np.random.randint(self.game.getActionSize())
-        while len(valid[piece]) == 0:  # ensure that the valid array is not empty at index 'piece'
-            piece = np.random.randint(self.game.getActionSize())
+        piece = self.get_valid_piece(valid)  # ensure that the valid array is not empty at index 'piece'
         moveInd = np.random.randint(len(valid[piece]))
-        if player == 1:
-            if chanceNum <= self.threshold:
-                return [piece, valid[piece][moveInd]]
-            else:
-                while not (valid[piece][moveInd] <= pieces[curPlayer, piece]):
-                    piece = np.random.randint(self.game.getActionSize())
-                    while len(valid[piece]) == 0:
-                        piece = np.random.randint(self.game.getActionSize())
-                    moveInd = np.random.randint(len(valid[piece]))
-                    chanceNum = np.random.randint(100)
-                    if chanceNum <= self.threshold:
-                        return [piece, valid[piece][moveInd]]
-        else:
-            if chanceNum <= self.threshold:
-                return [piece, valid[piece][moveInd]]
-            while not (valid[piece][moveInd] >= pieces[curPlayer, piece]):
-                piece = np.random.randint(self.game.getActionSize())
-                while len(valid[piece]) == 0:
-                    piece = np.random.randint(self.game.getActionSize())
-                moveInd = np.random.randint(len(valid[piece]))
-                chanceNum = np.random.randint(100)
-                if chanceNum <= self.threshold:
-                    return [piece, valid[piece][moveInd]]
+        while not self.is_better_move(valid, chanceNum, player, piece, moveInd):
+            piece = self.get_valid_piece(valid)
+            moveInd = np.random.randint(len(valid[piece]))
+            chanceNum = np.random.randint(100)
+        # time.sleep(0.5)
         return [piece, valid[piece][moveInd]]
+
+    # def piece_in_goal(self, goal, pieces, piece, player, move, goal_index):
+    #     if (player == -1 and goal_index == 5) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
+    #         x = 0
+    #     if (player == 1 and goal_index == 0) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
+    #         x = 0
+    #     if goal_index == 6:  # If all pieces are in goal state, then return True for win condition
+    #         return True
+    #     elif move == goal[goal_index]:
+    #         return True
+    #     elif pieces[piece] == goal[goal_index]:  # If current piece is in goal, skip piece
+    #         return False
+    #     elif np.isin(goal[goal_index], pieces):  # If piece exists in the desired goal, then check other goal_indexes
+    #         return self.piece_in_goal(goal, pieces, piece, player, move, goal_index+player)  # player is either -1 (p2) or +1 (1p)
+    #     else:  # otherwise, return false
+    #         return False
+
+    def get_valid_piece(self, valid):
+        curPiece = np.random.randint(self.game.getActionSize())
+        while len(valid[curPiece]) == 0:
+            curPiece = np.random.randint(self.game.getActionSize())
+        return curPiece
+
+    def is_better_move(self, valid, chanceNum, player, piece, move_index):
+        pieces = self.game.getPlayerPieces(player)
+        is_above_threshold = chanceNum > self.threshold  # select any move rather than moving up the board
+        # goals = self.game.getPlayerGoals(player)
+        if player == 1:
+            # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 0)
+            # if not is_piece_in_goal:
+            #     return True
+            if not is_above_threshold:
+                return True
+            return valid[piece][move_index] <= pieces[piece]
+        else:
+            # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 5)
+            # if not is_piece_in_goal:
+            #     return True
+            if not is_above_threshold:
+                return True
+            return valid[piece][move_index] >= pieces[piece]
 
 class MinMaxPlayer:
 
     def __init__(self, game):
         self.game = game
 
-    def play(self, board):
+    def play(self, display_surface, board, player):
         valids = self.game.getValidMoves(board, 1)
         # TODO IMPLEMENT MCTS HERE
 
@@ -129,6 +147,6 @@ class MCTSPlayer:
     def __init__(self, game):
         self.game = game
 
-    def play(self, board):
+    def play(self, display_surface, board, player):
         valids = self.game.getValidMoves(board, 1)
         # TODO IMPLEMENT MCTS HERE

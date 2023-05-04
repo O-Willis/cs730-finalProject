@@ -8,10 +8,10 @@ import sys
 
 from pygame.constants import *
 import pygame
-from chinesecheckers.CCheckersLogic import Board
-from board import *  # Contains gui elements
-from Arena import Arena
-from utils import *
+from finalProject.chinesecheckers.CCheckersLogic import Board
+from finalProject.gui import *  # Contains gui elements
+from finalProject.Arena import Arena
+from finalProject.utils import *
 
 def TwoPlayers():
     pygame.init()
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     p1_win = 0
     p2_win = 0
 
-    board = Board()
+    board = Board(6)
     newStr = str(board)
     print(str(board))
 

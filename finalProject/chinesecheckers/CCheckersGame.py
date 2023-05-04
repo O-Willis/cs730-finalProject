@@ -1,9 +1,9 @@
 from __future__ import print_function
 import sys
-sys.path.append('..')
-from finalProject.Game import Game
-from .CCheckersLogic import Board
 import numpy as np
+from finalProject.Game import Game
+from finalProject.chinesecheckers.CCheckersLogic import Board
+from finalProject.gui_2 import *
 
 class CCheckersGame(Game):
     pit_content = {
@@ -18,6 +18,7 @@ class CCheckersGame(Game):
 
     def __init__(self, n):
         self.n = n
+        self.goals = self.getInitBoard().goal
         self.pieces = [None] * self.n
         for i in range(self.n):
             self.pieces[i] = [0] * self.n
@@ -80,7 +81,12 @@ class CCheckersGame(Game):
             return np.array(valids)
         return legal_moves
 
-    def getPlayerPieces(self, board):
+    def getPlayerGoals(self, player):
+        curPlayer = 0 if player == -1 else 1
+        return self.goals[curPlayer]
+
+    def getPlayerPieces(self, player):
+        curPlayer = 0 if player == -1 else 1
         # index = [None] * self.n
         # for i in range(0, self.n):
         #     index[i] = [0] * self.n
@@ -95,7 +101,7 @@ class CCheckersGame(Game):
         #         index[0, counter_p1] = i
         #         counter_p1 += 1
 
-        return self.pieces
+        return self.pieces[curPlayer]
 
     def getGameEnded(self, board, player):
         """
@@ -109,9 +115,9 @@ class CCheckersGame(Game):
         """
         b = Board(self.n)
         b.pieces = np.copy(board.pieces)
-        if b.is_game__over(player):  # Player can be represented by either 1 or -1
+        if b.is_game_over(player):  # Player can be represented by either 1 or -1
             return 1
-        if b.is_game__over(-player):
+        if b.is_game_over(-player):
             return -1
         else:
             return 0
@@ -162,7 +168,8 @@ class CCheckersGame(Game):
         return board.countDiff(player)  # TODO NEED TO IMPLEMENT
 
     @staticmethod
-    def display(board):
+    def display(display, board, cannonical):
+        display_layout(display, cannonical)
         print("----------------------------------------")
         print(str(board), end="")
         print("----------------------------------------")

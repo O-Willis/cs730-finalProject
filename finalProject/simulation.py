@@ -2,6 +2,7 @@ import sys
 
 import Arena
 from MCTS import MCTS
+from finalProject.gui_2 import *
 from chinesecheckers.CCheckersPlayers import *
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
 # from chinesecheckers.pytorch.NNet import NNetWrapper as Net
@@ -11,7 +12,7 @@ from utils import *
 
 from pygame.constants import *
 import pygame
-from board import *  # Contains gui elements
+from gui_2 import *  # Contains gui elements
 
 def failCode(errorCode):
     if errorCode == 0:

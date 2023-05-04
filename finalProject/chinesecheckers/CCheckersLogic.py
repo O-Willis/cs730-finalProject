@@ -130,7 +130,7 @@ class Board():
         #  [0,:] splices array and all column values become assigned
         self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
         self.pieces[1, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
-        self.goal[0, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
+        self.goal[0, :] = 35 - np.array([5, 4, 3, 2, 1, 0])  # player 1s goal
         self.goal[1, :] = self.pieces[0, :]
 
     def __getitem__(self, index):
@@ -407,7 +407,7 @@ class Board():
                 return False
 
 
-    def is_game__over(self, player):
+    def is_game_over(self, player):
         playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
         for i in range(6):
             curIndex = self.pieces[playerInd, i]

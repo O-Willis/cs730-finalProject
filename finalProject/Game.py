@@ -66,6 +66,9 @@ class Game():
         """
         pass
 
+    def getPlayerGoals(self, player):
+        pass
+
     def getPlayerPieces(self, board):
         pass
 
