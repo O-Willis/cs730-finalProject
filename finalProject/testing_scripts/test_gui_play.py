@@ -49,7 +49,7 @@ if __name__ == "__main__":
             selected_pit = temp_select
         print(f"Highlighted moved: {highlighted_moves}")
 
-        time.sleep(0.04)
+        # time.sleep(0.04)
 
         for event in pg.event.get():
             if event.type == QUIT:

@@ -2,11 +2,10 @@ import os
 import sys
 import time
 import numpy as np
-import tqdm import tqdm  # Shows progress bars for loops
+import tqdm  # Shows progress bars for loops
 
-sys.path.append('../../')
-from ...utils import *
-from ...NeuralNet import NeuralNet
+from finalProject.utils import *
+from finalProject.NeuralNet import NeuralNet
 
 import torch
 import torch.optim as optim

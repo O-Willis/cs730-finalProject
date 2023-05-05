@@ -18,13 +18,6 @@ class CCheckersGame(Game):
 
     def __init__(self, n):
         self.n = n
-        self.goals = self.getInitBoard().goal
-        self.pieces = [None] * self.n
-        for i in range(self.n):
-            self.pieces[i] = [0] * self.n
-        self.pieces = np.zeros((2, 6), dtype=int)
-        self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
-        self.pieces[1, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
 
     def getStringRepresentation(self):
         board = Board(self.n)
@@ -56,8 +49,7 @@ class CCheckersGame(Game):
         if action == [-1, -1]:
             return (board, -player)
         b = Board(self.n)
-        self.pieces = np.copy(board.pieces)
-        b.pieces = np.copy(board.pieces)
+        b.pieces = np.copy(board)
         piece, move = action
         b.execute_move(player, piece, move)
         return (b, -player)
@@ -74,34 +66,19 @@ class CCheckersGame(Game):
         """
         valids = [0]*self.getActionSize()
         b = Board(self.n)
-        b.pieces = np.copy(self.pieces)
+        # if len(board) == 2:  # FIXME randPlayer and Human both use canonical for board!!
+        #     b.pieces = np.copy(self.pieces)
+        # else:
+        #     b.pieces = np.copy(board)
+        b.pieces = np.copy(board)
         legal_moves = b.get_legal_moves(player)
         if len(legal_moves) == 0:
             valids[-1]=1  # TODO not sure what this does!!!
             return np.array(valids)
         return legal_moves
 
-    def getPlayerGoals(self, player):
-        curPlayer = 0 if player == -1 else 1
-        return self.goals[curPlayer]
-
     def getPlayerPieces(self, player):
-        curPlayer = 0 if player == -1 else 1
-        # index = [None] * self.n
-        # for i in range(0, self.n):
-        #     index[i] = [0] * self.n
-        # index = np.zeros((2, 6), dtype=int)
-        # counter_p2 = 0
-        # counter_p1 = 0
-        # for i in range(0, 36):
-        #     if board[i] == 1:
-        #         index[1, counter_p2] = i
-        #         counter_p2 += 1
-        #     elif board[i] == -1:
-        #         index[0, counter_p1] = i
-        #         counter_p1 += 1
-
-        return self.pieces[curPlayer]
+        return np.nonzero(self.pieces[:] == player)
 
     def getGameEnded(self, board, player):
         """
@@ -114,7 +91,7 @@ class CCheckersGame(Game):
 
         """
         b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b.pieces = np.copy(board)  # For canonical board
         if b.is_game_over(player):  # Player can be represented by either 1 or -1
             return 1
         if b.is_game_over(-player):
@@ -160,7 +137,8 @@ class CCheckersGame(Game):
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
         """
-        return str(board)
+        canonical_s = "".join(self.pit_content[pit] for pit in board)
+        return canonical_s
 
     def getScore(self, board, player):
         board = Board(self.n)
@@ -168,8 +146,44 @@ class CCheckersGame(Game):
         return board.countDiff(player)  # TODO NEED TO IMPLEMENT
 
     @staticmethod
-    def display(display, board, cannonical):
+    def display(display, pieces, cannonical):
         display_layout(display, cannonical)
+        lengths = [1, 2, 3, 4, 5, 6]
+        out = ""
+        index = 0
+        reverse_index = 2
+
+        if len(pieces) == 2:
+            p1_piece_indexes = pieces[0,:]
+            p2_piece_indexes = pieces[1,:]
+        else:
+            p1_piece_indexes = np.nonzero(pieces[:] == 1)[0]
+            p2_piece_indexes = np.nonzero(pieces[:] == -1)[0]
+        for r in range(0, 11):
+            row_val = r
+            linetab = r - 4
+            if (r <= 5):
+                linetab = 6 - r
+            for t in range(0, linetab):
+                out += "   "
+            if r > 5:
+                row_val -= reverse_index
+                reverse_index += 2
+            for c in range(0, lengths[row_val]):
+                isEnd = c == lengths[row_val] - 1
+                p2_piece = index == p2_piece_indexes[:]
+                p1_piece = index == p1_piece_indexes[:]
+                arr1 = np.array([0, 1, 2, 3, 4, 5])
+                if np.sum(p2_piece):
+                    out += f" 1_{arr1[p2_piece].item()}  "
+                elif np.sum(p1_piece):
+                    out += f" 2_{arr1[p1_piece].item()}  "
+                else:
+                    out += "  -   "
+                index += 1
+                if isEnd:
+                    out += "\n"
+                    break
         print("----------------------------------------")
-        print(str(board), end="")
+        print(out, end="")
         print("----------------------------------------")

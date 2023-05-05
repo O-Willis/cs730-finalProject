@@ -1,6 +1,7 @@
 import logging
 import random
 import tqdm as tqdm  # Shows progress bars for loops
+from finalProject.chinesecheckers.CCheckersPlayers import *
 from gui import *
 
 log = logging.getLogger(__name__)  # TODO need to implement custom __name__ for game
@@ -18,7 +19,7 @@ class Arena():
             print(f"Current game:\n{self.game}")
         players = [self.player1, self.player2]
         cur_player = -1 if random.randint(1, 2) == 1 else 1
-        # curPlayer = 1  # Player 1 will always go first
+        cur_player = 1  # Player 1 will always go first
         board = self.game.getInitBoard()
         display_surface = init_board()
         itNum = 0
@@ -26,12 +27,19 @@ class Arena():
             pg.display.update()
             playerInd = 0 if cur_player == 1 else 1
             itNum += 1
+            is_mcts_player = players[playerInd].__name__ != 'play'
             if verbose:  # Verbose represents debugging
                 assert self.display
-                print("Turn", str(itNum), "Player ", str(1) if cur_player == 1 else str(2))
-                self.display(display_surface, str(board), self.game.getCanonicalForm(board, cur_player))
+                player_turn = str(1) if cur_player == 1 else str(2)
+                player_type = players[playerInd].__qualname__
+                player_type = player_type[0 : (len(player_type) - 5)] if not is_mcts_player else 'MCTSPlayer'
+                print(f"Turn {str(itNum)} Player {player_turn} ({player_type})", )
+                self.display(display_surface, board, self.game.getCanonicalForm(board, cur_player))
             temp = self.game.getCanonicalForm(board, cur_player)
-            action = players[playerInd](display_surface, temp, cur_player)
+            if not is_mcts_player:
+                action = players[playerInd](display_surface, temp, cur_player)
+            else:
+                action = players[playerInd](temp, cur_player)
 
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, cur_player), cur_player)
             if verbose:
@@ -46,7 +54,7 @@ class Arena():
             board, cur_player = self.game.getNextState(board, cur_player, action)
         if verbose:
             assert self.display
-            self.display(display_surface, str(board), self.game.getCanonicalForm(board, cur_player))
+            self.display(display_surface, board, self.game.getCanonicalForm(board, cur_player))
             print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
         # while not pg.mouse.get_pressed()[0]:
         #     x = 0

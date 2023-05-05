@@ -12,9 +12,10 @@ class HumanPlayer:
     def play(self, display_surface, board, player):
         valid = self.game.getValidMoves(board, player)  # Get valid moves as list
         # pieces = self.game.getNumpyFromCannonical(board)
+        pieces = self.game.getPlayerPieces(player)
         for i in range(0, len(valid)):  # iterate over moves
             if valid[i]:
-                print(f"{i}:{valid[i]}")
+                print(f"{i}[{pieces}]:{valid[i]}")
         highlighted_moves = set()
         selected_pit = -1
         entered_input = False
@@ -84,7 +85,7 @@ class RandPlayer:
         chanceNum = np.random.randint(100)
         piece = self.get_valid_piece(valid)  # ensure that the valid array is not empty at index 'piece'
         moveInd = np.random.randint(len(valid[piece]))
-        while not self.is_better_move(valid, chanceNum, player, piece, moveInd):
+        while not self.is_better_move(valid, board, chanceNum, player, piece, moveInd):
             piece = self.get_valid_piece(valid)
             moveInd = np.random.randint(len(valid[piece]))
             chanceNum = np.random.randint(100)
@@ -108,13 +109,14 @@ class RandPlayer:
     #         return False
 
     def get_valid_piece(self, valid):
-        curPiece = np.random.randint(self.game.getActionSize())
-        while len(valid[curPiece]) == 0:
-            curPiece = np.random.randint(self.game.getActionSize())
-        return curPiece
+        piece_index = np.random.randint(self.game.getActionSize())
+        while len(valid[piece_index]) == 0:
+            piece_index = np.random.randint(self.game.getActionSize())
+        return piece_index
 
-    def is_better_move(self, valid, chanceNum, player, piece, move_index):
-        pieces = self.game.getPlayerPieces(player)
+    def is_better_move(self, valid, board, chanceNum, player, piece, move_index):
+        # pieces = self.game.getPlayerPieces(player)
+        pieces = np.nonzero(board[:] == player)[0]
         is_above_threshold = chanceNum > self.threshold  # select any move rather than moving up the board
         # goals = self.game.getPlayerGoals(player)
         if player == 1:
@@ -144,9 +146,78 @@ class MinMaxPlayer:
 
 class MCTSPlayer:
 
-    def __init__(self, game):
+    def __init__(self, game, args):
         self.game = game
+        self.args = args
+        self.Qsa = {}  # stores Q values for s,a
+        self.Nsa = {}  # contains the num of times edge s,a was visited
+        self.Ns = {}  # contains num times board s was visited
 
-    def play(self, display_surface, board, player):
-        valids = self.game.getValidMoves(board, 1)
-        # TODO IMPLEMENT MCTS HERE
+        self.Es = {}  # contains the bool for if a game has ended for board s
+        self.Vs = {}  # contains the valid moves for board s
+
+    # def play(self, display_surface, board, player):
+    #     return self.getActionProb(init_board(), board, temp=0)
+
+    def getActionProb(self, canonical, cur_player=-1, temp=1):
+        for i in range(self.args.numMCTSSims):
+            self.search(canonical, cur_player)
+
+        s = self.game.stringRepresentation(canonical)
+        counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
+
+        if temp == 0:
+            best_actions = np.array(np.argwhere(counts == np.max(counts))).flatten()
+            best_action = np.random.choice(best_actions)
+            probability = [0] * len(counts)
+            probability[best_action] = 1
+            return probability
+
+        counts = [x ** (1. / temp) for x in counts]
+        counts_sum = float(sum(counts))
+        probs = [s / counts_sum for x in counts]
+        return probs
+
+    def search(self, canonical, cur_player):
+        s = self.game.stringRepresentation(canonical)
+
+        if s not in self.Es:
+            self.Es[s] = self.game.getGameEnded(canonical, cur_player)
+        if self.Es[s] != 0:
+            return -self.Es[s]
+
+        valids = self.game.getValidMoves(canonical, cur_player)
+
+        valids = self.Vs[s]
+        cur_best = -float('inf')
+        best_act = -1
+
+        for a in range(self.game.getActionSize()):
+            if valids[a]:
+                if (s, a) in self.Qsa:
+                    u = self.Qsa[(s, a)] + self.args.cpuct * math.sqrt(self.Ns[s]) / (
+                        1 + self.Nsa[(s, a)])
+                else:
+                    from finalProject.MCTS import EPS
+                    u = self.args.cpuct * math.sqrt(self.Ns[s] + EPS)
+
+                if u > cur_best:
+                    cur_best = u
+                    best_act = a
+
+        a = best_act
+        next_s, next_player = self.game.getNextState(canonical, 1, a)
+        next_s = self.game.getCanonicalForm(next_s, next_player)
+
+        v = self.search(next_s)
+
+        if (s, a) in self.Qsa:
+            self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)
+            self.Nsa[(s, a)] += 1
+
+        else:
+            self.Qsa[(s, a)] = v
+            self.Nsa[(s, a)] = 1
+
+        self.Ns[s] += 1
+        return -v
