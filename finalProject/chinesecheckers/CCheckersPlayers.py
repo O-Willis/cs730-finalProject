@@ -3,6 +3,7 @@ from finalProject.board import *
 import pygame as pg
 import sys
 import time
+from copy import deepcopy
 
 class HumanPlayer:
 
@@ -115,13 +116,59 @@ class RandPlayer:
         return [piece, valid[piece][moveInd]]
 
 class MinMaxPlayer:
-
+    # Player 1 is maximizing player / Player 2 is minimizing player
     def __init__(self, game):
         self.game = game
 
-    def play(self, board):
-        valids = self.game.getValidMoves(board, 1)
-        # TODO IMPLEMENT MCTS HERE
+    def play(self, display_surface, board, player):
+        # run minimax algorithm with searching depth 2
+        # curPlayer = 0 if player == -1 else 1
+        valid = self.game.getValidMoves(board, player)
+        print(f"Valid moves: {valid}")
+
+        result = self.minimax(board, player, 2, player, True)
+        _, pieceToMove, nextIndex = result[0], result[1], result[2]
+        # print(f"Moving piece {pieceToMove} to the new index of {nextIndex}")
+        return [pieceToMove, nextIndex]
+
+    def minimax(self, board, player, maxDepth, playerHeuristic, maxP):
+        if maxDepth == 0 or self.game.getGameEnded(board, player) != 0:
+            return [self.game.getScore(board, playerHeuristic), None, None]
+
+        if maxP: # maximizing player
+            bestValueMax = -9999
+            piece = -1
+            index = -1
+            valids = self.game.getValidMoves(board, player)
+
+            for i in range(len(valids)):
+                for j in range(len(valids[i])):
+                    originalBoard = deepcopy(board)
+                    board, player = self.game.getNextState(board, player, [i,valids[i][j]])
+                    actionValue, _ , _ = self.minimax(board, player, maxDepth - 1, playerHeuristic, False)
+                    if actionValue > bestValueMax:
+                        bestValueMax = actionValue
+                        index = valids[i][j]
+                        piece = i
+                    board = originalBoard
+            return [bestValueMax, piece, index]
+
+        else: # minimizing player
+            piece = -1
+            index = -1
+            bestValueMin = 9999
+            valids = self.game.getValidMoves(board, player)
+            for i in range(len(valids)):
+                for j in range(len(valids[i])):
+                    originalBoard = deepcopy(board)
+                    board, player = self.game.getNextState(board, player, [i, valids[i][j]])
+                    actionValue, _ , _ = self.minimax(board, player, maxDepth - 1, playerHeuristic, True)
+                    if actionValue < bestValueMin:
+                        bestValueMin = actionValue
+                        index = valids[i][j]
+                        piece = i
+                    board = originalBoard
+            return [bestValueMin, piece, index]
 
 
 class MCTSPlayer:

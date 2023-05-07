@@ -30,7 +30,7 @@ def getPlayers(type):
     player2 = rp
     if type == 1:  # default 0 represents AI vs AI
         if 'minimax' in sys.argv:
-            player1 = minimaxPlayer  # TODO change this later
+            player1 = humanPlayer  # TODO change this later
             player2 = minimaxPlayer
         elif 'mcts' in sys.argv:
             player1 = mctsPlayer  # TODO change this later
@@ -61,8 +61,8 @@ battle_type = 0
 if '-play' in sys.argv:
     if len(sys.argv) < 2:
         failCode(0)
-    if len(sys.argv) == 2:
-        battle_type = 0
+    if len(sys.argv) == 3:
+        battle_type = 1
     elif len(sys.argv) > 2:
         battle_type = int(sys.argv[2])
 

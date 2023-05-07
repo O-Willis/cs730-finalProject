@@ -156,10 +156,31 @@ class CCheckersGame(Game):
         """
         return str(board)
 
+    '''
+                 0      player 1 goal
+               1   2  
+             3   4   5  
+           6   7   8   9  
+        10  11  12  13  14  
+      15  16  17  18  19  20  
+        21  22  23  24  25  
+          26  27  28  29  
+            30  31  32  
+              33  34  
+                35       player 2 goal
+    '''
+
     def getScore(self, board, player):
-        board = Board(self.n)
-        board.pieces = np.copy(board)
-        return board.countDiff(player)  # TODO NEED TO IMPLEMENT
+        playerInd = 1 if player == 1 else 0
+        score = 0
+        for i in range(6):
+            if playerInd:
+                score += board.scorePlayer1[self.pieces[playerInd, i]][0]
+                score -= board.scorePlayer2[self.pieces[playerInd-1, i]][0]
+            else:
+                score -= board.scorePlayer1[self.pieces[playerInd+1, i]][0]
+                score += board.scorePlayer2[self.pieces[playerInd, i]][0]
+        return score
 
     @staticmethod
     def display(board):

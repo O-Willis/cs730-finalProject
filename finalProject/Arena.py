@@ -15,7 +15,7 @@ class Arena():
         self.display_surface = init_board()
 
     def playGame(self, verbose=False):  # TODO Need to understand how turn taking & action taking works!!!
-        if (self.display):
+        if self.display:
             print(f"Current game:\n{self.game}")
         players = [self.player1, self.player2]
         curPlayer = -1 if random.randint(1, 2) == 1 else 1
@@ -30,14 +30,15 @@ class Arena():
                 print("Turn", str(itNum), "Player ", str(1) if curPlayer == 1 else str(2))
                 self.display(str(board))
             temp = self.game.getCanonicalForm(board, curPlayer)
-            action = players[playerInd](self.display_surface, temp, curPlayer)
+            # temp and board change
+            action = players[playerInd](self.display_surface, board, curPlayer)
 
-            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), curPlayer)
+            valids = self.game.getValidMoves(board, curPlayer)
 
             if action[1] not in valids[action[0]]:  # TODO recheck the logic here. POSSIBLE FOR 0
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
-                assert valids[action] > 0
+                #assert valids[action] > 0
             if verbose:
                 assert self.display
                 print(f"Moving {str(action[0])} to index {action[1]}")

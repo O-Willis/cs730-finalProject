@@ -117,6 +117,86 @@ class Board():
             [30, 32]                    # edge 35
         ]
 
+        # distance calculations for player 1
+        self.scorePlayer1 = [
+            [15],  # edge 0
+            [14],  # edge 1
+            [14],  # edge 2
+            [13],  # edge 3
+            [13],  # mid 4
+            [13],  # edge 5
+            [12],  # edge 6
+            [12],  # mid 7
+            [12],  # mid 8
+            [12],  # edge 9
+            [11],  # edge 10
+            [11],  # mid 11
+            [11],  # mid 12
+            [11],  # mid 13
+            [11],  # mid 14
+            [10],  # edge 15
+            [10],  # mid 16
+            [10],  # mid 17
+            [10],  # mid 18
+            [10],  # mid 19
+            [10],  # edge 20
+            [9],  # edge 21
+            [9],  # mid 22
+            [9],  # mid 23
+            [9],  # mid 24
+            [9],  # edge 25
+            [8],  # edge 26
+            [8],  # mid 27
+            [8],  # mid 28
+            [8],  # edge 29
+            [7],  # edge 30
+            [7],  # mid 31
+            [7],  # edge 32
+            [6],  # edge 33
+            [6],  # edge 34
+            [4]  # edge 35
+        ]
+
+        # distance calculations for player 2
+        self.scorePlayer2 = [
+            [4],  # edge 0
+            [6],  # edge 1
+            [6],  # edge 2
+            [7],  # edge 3
+            [7],  # mid 4
+            [7],  # edge 5
+            [8],  # edge 6
+            [8],  # mid 7
+            [8],  # mid 8
+            [8],  # edge 9
+            [9],  # edge 10
+            [9],  # mid 11
+            [9],  # mid 12
+            [9],  # mid 13
+            [9],  # mid 14
+            [10],  # edge 15
+            [10],  # mid 16
+            [10],  # mid 17
+            [10],  # mid 18
+            [10],  # mid 19
+            [10],  # edge 20
+            [11],  # edge 21
+            [11],  # mid 22
+            [11],  # mid 23
+            [11],  # mid 24
+            [11],  # edge 25
+            [12],  # edge 26
+            [12],  # mid 27
+            [12],  # mid 28
+            [12],  # edge 29
+            [13],  # edge 30
+            [13],  # mid 31
+            [13],  # edge 32
+            [14],  # edge 33
+            [14],  # edge 34
+            [15]  # edge 35
+        ]
+
         self.n = n  # Number of pieces
         # Initialize empty board
         self.pieces = [None] * self.n
@@ -224,7 +304,11 @@ class Board():
         # Indicates if the spot is occupied
 
         # Get all pits with pieces of given color
-        playerInd = 1 if player == 1 else 0
+        if player == 1:
+            playerInd = 1
+        else:
+            playerInd = 0
+
         for pit in range(self.n):
             closed_list = set()
             validMoves = self.method_name(closed_list, map, pit, playerInd, True)
