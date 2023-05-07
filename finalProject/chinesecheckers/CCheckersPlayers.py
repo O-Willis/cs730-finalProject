@@ -1,5 +1,6 @@
 import numpy as np
 from finalProject.gui import *
+from finalProject.chinesecheckers.CCheckersNode import Node
 import pygame as pg
 import sys
 import time
@@ -12,9 +13,6 @@ class HumanPlayer:
     def play(self, display_surface, board, player):
         valid = self.game.getValidMoves(board, player)  # Get valid moves as list
         # pieces = self.game.getNumpyFromCannonical(board)
-        for i in range(0, len(valid)):  # iterate over moves
-            if valid[i]:
-                print(f"{i}:{valid[i]}")
         highlighted_moves = set()
         selected_pit = -1
         entered_input = False
@@ -22,11 +20,11 @@ class HumanPlayer:
 
             a = input()
 
-            piece, userMove = [int(x) for x in a.split(' ')]
+            piece, user_move = [int(x) for x in a.split(' ')]
             piece = int(piece)
             if piece != -1:  # -1 will be the optional termination command
-                userMove = int(userMove)
-                if userMove in valid[piece]:
+                user_move = int(user_move)
+                if user_move in valid[piece]:
                     break
                 else:
                     print("Incorrect input!!")
@@ -70,7 +68,7 @@ class HumanPlayer:
             # if entered_input is True:
             #     break
 
-        return [piece, userMove]
+        return [piece, user_move]
 
 
 class RandPlayer:
@@ -80,16 +78,18 @@ class RandPlayer:
         self.threshold = 10
 
     def play(self, display_surface, board, player):
+        player_index = 1 if player == 1 else 0
+        p_pieces = board.pieces[player_index]
         valid = self.game.getValidMoves(board, player)
-        chanceNum = np.random.randint(100)
+        threshold = np.random.randint(100)
         piece = self.get_valid_piece(valid)  # ensure that the valid array is not empty at index 'piece'
-        moveInd = np.random.randint(len(valid[piece]))
-        while not self.is_better_move(valid, chanceNum, player, piece, moveInd):
+        move_index = np.random.randint(len(valid[piece]))
+        while not self.is_better_move(valid, threshold, player, p_pieces, piece, move_index):
             piece = self.get_valid_piece(valid)
-            moveInd = np.random.randint(len(valid[piece]))
-            chanceNum = np.random.randint(100)
+            move_index = np.random.randint(len(valid[piece]))
+            threshold = np.random.randint(100)
         # time.sleep(0.5)
-        return [piece, valid[piece][moveInd]]
+        return [piece, valid[piece][move_index]]
 
     # def piece_in_goal(self, goal, pieces, piece, player, move, goal_index):
     #     if (player == -1 and goal_index == 5) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
@@ -108,14 +108,13 @@ class RandPlayer:
     #         return False
 
     def get_valid_piece(self, valid):
-        curPiece = np.random.randint(self.game.getActionSize())
-        while len(valid[curPiece]) == 0:
-            curPiece = np.random.randint(self.game.getActionSize())
-        return curPiece
+        cur_piece = np.random.randint(self.game.getActionSize())
+        while len(valid[cur_piece]) == 0:
+            cur_piece = np.random.randint(self.game.getActionSize())
+        return cur_piece
 
-    def is_better_move(self, valid, chanceNum, player, piece, move_index):
-        pieces = self.game.getPlayerPieces(player)
-        is_above_threshold = chanceNum > self.threshold  # select any move rather than moving up the board
+    def is_better_move(self, valid, threshold, player, p_pieces, piece, move_index):
+        is_above_threshold = threshold > self.threshold  # select any move rather than moving up the board
         # goals = self.game.getPlayerGoals(player)
         if player == 1:
             # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 0)
@@ -123,14 +122,14 @@ class RandPlayer:
             #     return True
             if not is_above_threshold:
                 return True
-            return valid[piece][move_index] <= pieces[piece]
+            return valid[piece][move_index] <= p_pieces[piece]
         else:
             # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 5)
             # if not is_piece_in_goal:
             #     return True
             if not is_above_threshold:
                 return True
-            return valid[piece][move_index] >= pieces[piece]
+            return valid[piece][move_index] >= p_pieces[piece]
 
 class MinMaxPlayer:
 
@@ -144,8 +143,42 @@ class MinMaxPlayer:
 
 class MCTSPlayer:
 
-    def __init__(self, game):
+    def __init__(self, game, args):
+        self.root = None
         self.game = game
+        self.args = args
+
+    def get_action(self, state):
+        if self.root is None or state != self.root.state:
+            self.root = Node(state)
+
+        for i in range(self.args.numMCTSSims):
+            node = self.root
+            while not node.is_fully_expanded() and not node.is_terminal():
+                node = node.expand()
+
+            if node.is_terminal():
+                result = node.reward()
+            else:
+                child = node.best_child()
+                result = child.simulate()
+            node.backpropagate(result)
+
+        best_child = self.root.best_child(c_param=0)
+        return best_child.action
+
+    def get_legal_moves(self):
+        legal_moves = []
+        # logic to get all legal moves
+        return legal_moves
+
+    def make_move(self, move):
+        self.player_turn = 2 if self.player_turn == 1 else 1
+
+    def is_game_over(self):
+        # logic to check if the game is over
+        # return True if the game is over, False otherwise
+        return False  # replace with actual logic
 
     def play(self, display_surface, board, player):
         valids = self.game.getValidMoves(board, 1)

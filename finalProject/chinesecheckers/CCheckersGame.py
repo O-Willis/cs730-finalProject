@@ -19,12 +19,6 @@ class CCheckersGame(Game):
     def __init__(self, n):
         self.n = n
         self.goals = self.getInitBoard().goal
-        self.pieces = [None] * self.n
-        for i in range(self.n):
-            self.pieces[i] = [0] * self.n
-        self.pieces = np.zeros((2, 6), dtype=int)
-        self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
-        self.pieces[1, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
 
     def getStringRepresentation(self):
         board = Board(self.n)
@@ -56,7 +50,6 @@ class CCheckersGame(Game):
         if action == [-1, -1]:
             return (board, -player)
         b = Board(self.n)
-        self.pieces = np.copy(board.pieces)
         b.pieces = np.copy(board.pieces)
         piece, move = action
         b.execute_move(player, piece, move)
@@ -74,34 +67,12 @@ class CCheckersGame(Game):
         """
         valids = [0]*self.getActionSize()
         b = Board(self.n)
-        b.pieces = np.copy(self.pieces)
+        b.pieces = np.copy(board.pieces)
         legal_moves = b.get_legal_moves(player)
         if len(legal_moves) == 0:
             valids[-1]=1  # TODO not sure what this does!!!
             return np.array(valids)
         return legal_moves
-
-    def getPlayerGoals(self, player):
-        curPlayer = 0 if player == -1 else 1
-        return self.goals[curPlayer]
-
-    def getPlayerPieces(self, player):
-        curPlayer = 0 if player == -1 else 1
-        # index = [None] * self.n
-        # for i in range(0, self.n):
-        #     index[i] = [0] * self.n
-        # index = np.zeros((2, 6), dtype=int)
-        # counter_p2 = 0
-        # counter_p1 = 0
-        # for i in range(0, 36):
-        #     if board[i] == 1:
-        #         index[1, counter_p2] = i
-        #         counter_p2 += 1
-        #     elif board[i] == -1:
-        #         index[0, counter_p1] = i
-        #         counter_p1 += 1
-
-        return self.pieces[curPlayer]
 
     def getGameEnded(self, board, player):
         """

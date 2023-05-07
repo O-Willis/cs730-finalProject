@@ -219,47 +219,47 @@ class Board():
         (1 for white, -1 for black)
         """
         out = []
-        map = np.zeros((36))
-        map[self.pieces] = 1  # Assigns 1 to both Player1 and Player2
+        board_map = np.zeros((36))
+        board_map[self.pieces] = 1  # Assigns 1 to both Player1 and Player2
         # Indicates if the spot is occupied
 
         # Get all pits with pieces of given color
         playerInd = 1 if player == 1 else 0
         for pit in range(self.n):
             closed_list = set()
-            validMoves = self.method_name(closed_list, map, pit, playerInd, True)
+            validMoves = self.determine_jumps(closed_list, board_map, pit, playerInd, True)
             out.append(list(set(validMoves)))
         return out
 
-    def method_name(self, closed_list, map, pit, playerInd, isFirst):
+    def determine_jumps(self, closed_list, board_map, pit, player_index, is_first):
         # given pit, get index
-        pieceInd = self.pieces[playerInd, pit]  # :, specifies 1st column
-        closed_list.add(pieceInd)
-        singleMoves = np.array(self.moves[pieceInd])  # Formats into an array for the actual moves
+        piece_index = self.pieces[player_index, pit]  # :, specifies 1st column
+        closed_list.add(piece_index)
+        single_moves = np.array(self.moves[piece_index])  # Formats into an array for the actual moves
         # This filters out all moves that aren't possible given position
-        validSingleMoves = singleMoves[map[singleMoves] == 0]  # 0 represents empty pit for move to be made
-        validMoves = list(validSingleMoves) if isFirst else []
-        jumpMoves = np.array(self.jumpMoves[pieceInd])
-        singleInvalidMoves = singleMoves[map[singleMoves] != 0]  # represents invalid moves
-        validJumpMoves = []
+        valid_single_moves = single_moves[board_map[single_moves] == 0]  # 0 represents empty pit for move to be made
+        valid_moves = list(valid_single_moves) if is_first else []
+        jump_moves = np.array(self.jumpMoves[piece_index])
+        single_invalid_moves = single_moves[board_map[single_moves] != 0]  # represents invalid moves
+        valid_jump_moves = []
         # If there is an intersection between a single's valid move
-        for invalidMove in list(singleInvalidMoves):
+        for invalidMove in list(single_invalid_moves):
             potentialJumpMoves = np.array(self.moves[invalidMove])
             # Find if there is space for a potential jump move
-            validPotentialJumpMoves = potentialJumpMoves[map[potentialJumpMoves] == 0]
-            for i in range(jumpMoves.shape[0]):  # going over the valid moves
-                if sum(jumpMoves[i] == validPotentialJumpMoves):
-                    validJumpMoves.append(jumpMoves[i])
+            validPotentialJumpMoves = potentialJumpMoves[board_map[potentialJumpMoves] == 0]
+            for i in range(jump_moves.shape[0]):  # going over the valid moves
+                if sum(jump_moves[i] == validPotentialJumpMoves):
+                    valid_jump_moves.append(jump_moves[i])
                     break
 
-        validMoves.extend(validJumpMoves)  # Grows the list
-        for move in validJumpMoves:
+        valid_moves.extend(valid_jump_moves)  # Grows the list
+        for move in valid_jump_moves:
             if move in closed_list: continue
-            temp = self.pieces[playerInd, pit]
-            self.pieces[playerInd, pit] = move
-            validMoves.extend(self.method_name(closed_list, map, pit, playerInd, False))
-            self.pieces[playerInd, pit] = temp
-        return validMoves
+            temp = self.pieces[player_index, pit]
+            self.pieces[player_index, pit] = move
+            valid_moves.extend(self.determine_jumps(closed_list, board_map, pit, player_index, False))
+            self.pieces[player_index, pit] = temp
+        return valid_moves
 
     def has_legal_moves(self, player):
         """
@@ -271,8 +271,8 @@ class Board():
         """
         Receive all legal moves given a color
         """
-        curMoves = self.get_legal_moves(player)
-        return len(curMoves) == 0
+        cur_moves = self.get_legal_moves(player)
+        return len(cur_moves) == 0
 
     def get_position_moves(self, pit):  # TODO
         """
@@ -296,38 +296,30 @@ class Board():
 
         return moves
 
-    def get_valid_single_moves(self, player, piece):
+    def get_valid_single_moves(self, board_map, piece):
         """
         Gives all single moves given the player and piece number
         """
-        map = np.zeros((36))
-        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
-        pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
         # print(f"Current piece's board index: {pieceInd}")
-        singleMoves = np.array(self.moves[pieceInd])
-        validSingleMoves = singleMoves[map[singleMoves] == 0]
-        return validSingleMoves
+        single_moves = np.array(self.moves[piece])
+        valid_single_moves = single_moves[board_map[single_moves] == 0]
+        return valid_single_moves
 
-    def get_valid_jump_moves(self, player, piece):
-        map = np.zeros((36))
-        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
-        pieceInd = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
-        jumpMoves = np.array(self.jumpMoves[pieceInd])
-        singleMoves = np.array(self.moves[pieceInd])
-        singleInvalidMoves = singleMoves[map[singleMoves] != 0]  # represents invalid moves
+    def get_valid_jump_moves(self, board_map, piece):
+        jump_moves = np.array(self.jumpMoves[piece])
+        single_moves = np.array(self.moves[piece])
+        single_invalid_moves = single_moves[board_map[single_moves] != 0]  # represents invalid moves
         validJumpMoves = []
         # If there is an intersection between a single's valid move
-        for invalidMove in list(singleInvalidMoves):
+        for invalidMove in list(single_invalid_moves):
             potentialJumpMoves = np.array(self.moves[invalidMove])
             # Find if there is space for a potential jump move
-            validPotentialJumpMoves = potentialJumpMoves[map[potentialJumpMoves] == 0]
+            validPotentialJumpMoves = potentialJumpMoves[board_map[potentialJumpMoves] == 0]
             # print(f"Valid potential jump moves: {validPotentialJumpMoves}")
-            for i in range(jumpMoves.shape[0]):  # going over the valid moves
+            for i in range(jump_moves.shape[0]):  # going over the valid moves
                 # print(f"cur jumpMoves: {jumpMoves[i]}")
-                if sum(jumpMoves[i] == validPotentialJumpMoves):
-                    validJumpMoves.append(jumpMoves[i])
+                if sum(jump_moves[i] == validPotentialJumpMoves):
+                    validJumpMoves.append(jump_moves[i])
                     break
         # print(f"Piece {piece} has valid jump moves: {validJumpMoves}")
         return validJumpMoves
@@ -336,21 +328,22 @@ class Board():
         """
         Performs a check on an action to verify that the action is a valid action
         """
-        map = np.zeros((36))
-        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
-        validSingleMoves = self.get_valid_single_moves(player, piece)
-        validJumpMoves = self.get_valid_jump_moves(player, piece)
-        actionIsSingle = action in validSingleMoves
-        actionIsJump = action in validJumpMoves
-        if actionIsSingle is True and actionIsJump is True:
-            assert(actionIsSingle is not actionIsJump)
+        board_map = np.zeros((36))
+        board_map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
+        p_index = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        piece_index = self.pieces[p_index, piece]  # gets the pieceIndex for given piece of player
+        valid_single_moves = self.get_valid_single_moves(board_map, piece_index)
+        valid_jump_moves = self.get_valid_jump_moves(board_map, piece_index)
+        action_is_single = action in valid_single_moves
+        action_is_jump = action in valid_jump_moves
+        if action_is_single is True and action_is_jump is True:
+            assert(action_is_single is not action_is_jump)
 
-        if action in validSingleMoves:
+        if action in valid_single_moves:
             # print(f"{action} is a single move")
             return True
 
-        elif action in validJumpMoves:
+        elif action in valid_jump_moves:
             # print(f"{action} is a jump move")
             return True
         else:
@@ -358,7 +351,7 @@ class Board():
 
 
 
-    def execute_move(self, player, piece, action):  # TODO might need to change framework to work with new parameters
+    def execute_move(self, player, player_piece, action):  # TODO might need to change framework to work with new parameters
         """
         Performs the given move on the board.
         In terms of cutting down on calculation size,
@@ -370,38 +363,38 @@ class Board():
         assert len(list(moves)) > 0
         # print(f"Moving piece {piece} to pit[{action}]")
 
-        map = np.zeros((36))
-        map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
-        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
-        orig_piece_index = self.pieces[playerInd, piece]  # gets the pieceIndex for given piece of player
+        board_map = np.zeros((36))
+        board_map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
+        player_index = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        piece_index = self.pieces[player_index, player_piece]  # gets the pieceIndex for given piece of player
 
-        validSingleMoves = self.get_valid_single_moves(player, piece)
-        validJumpMoves = self.get_valid_jump_moves(player, piece)
-        actionIsSingle = action in validSingleMoves
-        actionIsJump = action in validJumpMoves
-        if actionIsSingle is True and actionIsJump is True:
-            assert(actionIsSingle is not actionIsJump)
+        valid_single_moves = self.get_valid_single_moves(board_map, piece_index)
+        valid_jump_moves = self.get_valid_jump_moves(board_map, piece_index)
+        action_is_single = action in valid_single_moves
+        action_is_jump = action in valid_jump_moves
+        if action_is_single is True and action_is_jump is True:
+            assert(action_is_single is not action_is_jump)
 
-        if action in validSingleMoves:
+        if action in valid_single_moves:
             # print(f"{action} is a single move")
             x = 0
 
-        if action in validJumpMoves:
+        if action in valid_jump_moves:
             # print(f"{action} is a jump move")
             x = 0
 
 
-        if action in moves[piece]:
-            self.pieces[playerInd, piece] = action
+        if action in moves[player_piece]:
+            self.pieces[player_index, player_piece] = action
 
         # TODO need to implement turn based rotating on single move
         #   as well as multi-move capabilities based on jump move
 
-        if actionIsSingle:
+        if action_is_single:
             return True  # Return True if changePlayers
         else:
-            nextJumps = self.get_valid_jump_moves(player, piece)
-            if len(nextJumps) == 1 and orig_piece_index in nextJumps:
+            nextJumps = self.get_valid_jump_moves(board_map, player_piece)
+            if len(nextJumps) == 1 and piece_index in nextJumps:
                 return True
             else:
                 return False

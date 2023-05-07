@@ -24,18 +24,20 @@ class Arena():
         itNum = 0
         while self.game.getGameEnded(board, cur_player) == 0:
             pg.display.update()
-            playerInd = 0 if cur_player == 1 else 1
             itNum += 1
             if verbose:  # Verbose represents debugging
                 assert self.display
                 print("Turn", str(itNum), "Player ", str(1) if cur_player == 1 else str(2))
                 self.display(display_surface, str(board), self.game.getCanonicalForm(board, cur_player))
-            temp = self.game.getCanonicalForm(board, cur_player)
-            action = players[playerInd](display_surface, temp, cur_player)
-
-            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, cur_player), cur_player)
+            #  temp = self.game.getCanonicalForm(board, cur_player)
+            player_index = 0 if cur_player == 1 else 1
+            valids = self.game.getValidMoves(board, cur_player)
             if verbose:
-                print(f"Valid moves: {valids}")
+                p_pieces = board.pieces[1 if cur_player == 1 else 0]
+                for i in range(0, len(valids)):  # iterate over moves
+                    if valids[i]:
+                        print(f"P{1 if cur_player == 1 else 0} piece[{i}] at {p_pieces[i]}:{valids[i]}")
+            action = players[player_index](display_surface, board, cur_player)
             if action[1] not in valids[action[0]]:  # TODO recheck the logic here. POSSIBLE FOR 0
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
