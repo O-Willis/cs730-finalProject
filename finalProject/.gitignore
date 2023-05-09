@@ -1,5 +1,6 @@
 # Clion Projects
 .idea
 cmake-build-debug/*
-finalProject/__pycache__/*
-finalProject/chinesecheckers/__pycache__/*
+__pycache__/*
+chinesecheckers/__pycache__/*
+chinesecheckers/pytorch/__pycache__/*
