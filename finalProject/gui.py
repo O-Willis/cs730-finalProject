@@ -27,7 +27,7 @@ CIRCLE_DIAMETER = 2 * CIRCLE_RADIUS
 H_SPACING = 8
 V_SPACING = 1
 WINDOW_WIDTH = (H_MARGIN_DISTANCE * 2) + (CIRCLE_DIAMETER * 13)
-WINDOW_HEIGHT = (V_MARGIN_DISTANCE * 2) + (CIRCLE_DIAMETER * 17)
+WINDOW_HEIGHT = (V_MARGIN_DISTANCE * 2) + (CIRCLE_DIAMETER * 16)
 START_Y_COORD = 3.8*(V_MARGIN_DISTANCE + CIRCLE_RADIUS)
 
 #GAME_BOARD = (185, 142, 77)
@@ -54,7 +54,6 @@ def draw_board(display, board, player_turn, highlighted, selected_pit):
 
     # Sets the y_coordinate to around the center of window
     y_coord = START_Y_COORD
-
     highlighted_moves = highlighted
 
     # sets initial x_coord to center
@@ -187,6 +186,8 @@ def highlight_potential_moves(highlighted_moves, selected_piece, display_surface
         pg.draw.circle(display_surface, HIGHLIGHT, (x_coord, y_coord), CIRCLE_RADIUS, 0)
     return highlighted_moves  # This allows highlighted moves values to stay persistent
 
+def isMovingPiece():
+    mouse_pos = pg.mouse.get_pos()
 
 # def highlight_best_move(best_move, display_surface):
 #

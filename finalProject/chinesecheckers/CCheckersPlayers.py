@@ -17,7 +17,6 @@ class HumanPlayer:
         selected_pit = -1
         entered_input = False
         while True:  # While loop for input
-
             a = input()
 
             piece, user_move = [int(x) for x in a.split(' ')]
@@ -31,26 +30,29 @@ class HumanPlayer:
             else:
                 break
 
-            # highlighted_moves, temp_select = draw_board(display_surface, pieces, player, highlighted_moves, selected_pit)
+            # highlighted_moves, temp_select = draw_board(display_surface, board, player, highlighted_moves, selected_pit)
             # pg.display.update()
             # if temp_select != -1:
             #     selected_pit = temp_select
-            #
+            # user_move = -1
             # for event in pg.event.get():
             #
             #     if event.type == pg.MOUSEBUTTONDOWN:
             #         position = pg.mouse.get_pos()
             #         highlighted_moves, temp_select = draw_board(display_surface, board, player, highlighted_moves, selected_pit)
             #         pg.display.update()
-            #         # piece, userMove = [int(x) for x in a.split(' ')]
+            #         # piece, user_move = [int(x) for x in a.split(' ')]
             #         piece = int(piece)
             #         if piece != -1:  # -1 will be the optional termination command
-            #             userMove = int(userMove)
-            #             if userMove in valid[piece]:
+            #             user_move = int(user_move)
+            #             if user_move in valid[piece]:
             #                 break
             #             else:
             #                 print("Incorrect input!!")
             #             # if piece < 0 or piece > 6:
+            #
+            #             # if isMovingPiece(event.pos):
+            #
             #
             #             # while userMove not in board.get_legal_moves(player_turn)[piece]:
             #             #     print(f"current move: {piece} to {userMove}")
@@ -64,9 +66,9 @@ class HumanPlayer:
             #         else:
             #             entered_input = True
             #             break
-            #
-            # if entered_input is True:
-            #     break
+
+            if entered_input is True:
+                break
 
         return [piece, user_move]
 
@@ -120,15 +122,15 @@ class RandPlayer:
             # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 0)
             # if not is_piece_in_goal:
             #     return True
-            if not is_above_threshold:
-                return True
+            # if not is_above_threshold:
+            #     return True
             return valid[piece][move_index] <= p_pieces[piece]
         else:
             # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 5)
             # if not is_piece_in_goal:
             #     return True
-            if not is_above_threshold:
-                return True
+            # if not is_above_threshold:
+            #     return True
             return valid[piece][move_index] >= p_pieces[piece]
 
 class MinMaxPlayer:

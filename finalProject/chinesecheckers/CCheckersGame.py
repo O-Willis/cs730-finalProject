@@ -18,7 +18,6 @@ class CCheckersGame(Game):
 
     def __init__(self, n):
         self.n = n
-        self.goals = self.getInitBoard().goal
 
     def getStringRepresentation(self):
         board = Board(self.n)
@@ -53,6 +52,7 @@ class CCheckersGame(Game):
         b.pieces = np.copy(board.pieces)
         piece, move = action
         b.execute_move(player, piece, move)
+
         return (b, -player)
 
     def getValidMoves(self, board, player):
@@ -93,7 +93,7 @@ class CCheckersGame(Game):
         else:
             return 0
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board):
         """
         Input:
             board: current board

@@ -20,6 +20,8 @@ Things needed to keep track off:
 import numpy as np
 
 '''
+
+      Board Indexes
              0  
            1   2  
          3   4   5  
@@ -31,6 +33,21 @@ import numpy as np
         30  31  32  
           33  34  
             35
+            
+Better Board indexing for Random
+             0  
+           1   2  
+         4   3   5  
+       8   6   7   9  
+    13  11  10  12  14  
+  19  17  15  16  18  20  
+    24  22  21  23  25  
+      28  26  27  29  
+        31  30  32  
+          33  34  
+            35
+            
+            
 '''
 
 

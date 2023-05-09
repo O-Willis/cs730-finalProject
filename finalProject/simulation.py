@@ -54,7 +54,7 @@ elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Imple
     # neural.load_checkpoint('./pretrained_models/pytorch/', '100checkpoints_best.pth.tar')
     # mcts1 = MCTS(game, neural, args)
 
-if type == 2:  # default 0 represents AI vs AI
+if battle_type == 2:  # default 0 represents AI vs AI
     if 'minimax' in sys.argv:
         player2 = minimaxPlayer
     elif 'mcts' in sys.argv:
