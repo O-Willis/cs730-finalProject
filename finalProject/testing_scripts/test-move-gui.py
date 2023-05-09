@@ -1,6 +1,6 @@
 from finalProject.chinesecheckers.CCheckersLogic import Board
 from pygame.constants import *
-from finalProject.board import *
+from finalProject.gui import *
 import pygame
 import sys
 import time

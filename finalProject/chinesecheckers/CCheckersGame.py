@@ -1,9 +1,9 @@
 from __future__ import print_function
 import sys
-sys.path.append('..')
-from finalProject.Game import Game
-from .CCheckersLogic import Board
 import numpy as np
+from finalProject.Game import Game
+from finalProject.chinesecheckers.CCheckersLogic import Board
+from finalProject.gui_2 import *
 
 class CCheckersGame(Game):
     pit_content = {
@@ -18,12 +18,7 @@ class CCheckersGame(Game):
 
     def __init__(self, n):
         self.n = n
-        self.pieces = [None] * self.n
-        for i in range(self.n):
-            self.pieces[i] = [0] * self.n
-        self.pieces = np.zeros((2, 6), dtype=int)
-        self.pieces[0, :] = [0, 1, 2, 3, 4, 5]
-        self.pieces[1, :] = 35 - np.array([5, 4, 3, 2, 1, 0])
+        self.goals = self.getInitBoard().goal
 
     def getStringRepresentation(self):
         board = Board(self.n)
@@ -55,7 +50,6 @@ class CCheckersGame(Game):
         if action == [-1, -1]:
             return (board, -player)
         b = Board(self.n)
-        self.pieces = np.copy(board.pieces)
         b.pieces = np.copy(board.pieces)
         piece, move = action
         b.execute_move(player, piece, move)
@@ -73,29 +67,12 @@ class CCheckersGame(Game):
         """
         valids = [0]*self.getActionSize()
         b = Board(self.n)
-        b.pieces = np.copy(self.pieces)
+        b.pieces = np.copy(board.pieces)
         legal_moves = b.get_legal_moves(player)
         if len(legal_moves) == 0:
             valids[-1]=1  # TODO not sure what this does!!!
             return np.array(valids)
         return legal_moves
-
-    def getPlayerPieces(self, board):
-        # index = [None] * self.n
-        # for i in range(0, self.n):
-        #     index[i] = [0] * self.n
-        # index = np.zeros((2, 6), dtype=int)
-        # counter_p2 = 0
-        # counter_p1 = 0
-        # for i in range(0, 36):
-        #     if board[i] == 1:
-        #         index[1, counter_p2] = i
-        #         counter_p2 += 1
-        #     elif board[i] == -1:
-        #         index[0, counter_p1] = i
-        #         counter_p1 += 1
-
-        return self.pieces
 
     def getGameEnded(self, board, player):
         """
@@ -109,9 +86,9 @@ class CCheckersGame(Game):
         """
         b = Board(self.n)
         b.pieces = np.copy(board.pieces)
-        if b.is_game__over(player):  # Player can be represented by either 1 or -1
+        if b.is_game_over(player):  # Player can be represented by either 1 or -1
             return 1
-        if b.is_game__over(-player):
+        if b.is_game_over(-player):
             return -1
         else:
             return 0
@@ -156,34 +133,51 @@ class CCheckersGame(Game):
         """
         return str(board)
 
-    '''
-                 0      player 1 goal
-               1   2  
-             3   4   5  
-           6   7   8   9  
-        10  11  12  13  14  
-      15  16  17  18  19  20  
-        21  22  23  24  25  
-          26  27  28  29  
-            30  31  32  
-              33  34  
-                35       player 2 goal
-    '''
+    ''' Score of Player 1
+                      0      goal
+                   -1   -1  
+                 -2   -2   -2  
+               -3   -3   -3  -3  
+            -4   -4   -4   -4   -4  
+          -5   -5   -5   -5   -5  -5  
+            -6   -6   -6   -6   -6  
+              -7   -7   -7   -7  
+                -9    -9   -9  
+                  -12   -12  
+                     -16    starting
+        '''
+
+    ''' Score of Player 2
+                          -16     starting
+                       -12   -12  
+                     -9   -9   -9  
+                   -7   -7   -7  -7  
+                -6   -6   -6   -6   -6  
+              -5   -5   -5   -5   -5  -5  
+                 -4   -4   -4   -4  -4  
+                   -3   -3   -3   -3  
+                     -2    -2   -2  
+                        -1    -1  
+                            0     goal 
+            '''
 
     def getScore(self, board, player):
         playerInd = 1 if player == 1 else 0
         score = 0
+        b = Board(self.n)
+        b.pieces = np.copy(board.pieces)
         for i in range(6):
             if playerInd:
-                score += board.scorePlayer1[self.pieces[playerInd, i]][0]
-                score -= board.scorePlayer2[self.pieces[playerInd-1, i]][0]
+                score += board.scorePlayer1[b.pieces[playerInd, i]][0]
+                score -= board.scorePlayer2[b.pieces[playerInd-1, i]][0]
             else:
-                score -= board.scorePlayer1[self.pieces[playerInd+1, i]][0]
-                score += board.scorePlayer2[self.pieces[playerInd, i]][0]
+                score -= board.scorePlayer1[b.pieces[playerInd+1, i]][0]
+                score += board.scorePlayer2[b.pieces[playerInd, i]][0]
         return score
 
     @staticmethod
-    def display(board):
+    def display(display, board, cannonical):
+        display_layout(display, cannonical)
         print("----------------------------------------")
         print(str(board), end="")
         print("----------------------------------------")
