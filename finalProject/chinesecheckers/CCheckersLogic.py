@@ -134,6 +134,33 @@ class Board():
             [30, 32]                    # edge 35
         ]
 
+        # distance calculations for player 1
+        self.scorePlayer2 = [
+                          [-16],                    # row 1
+                       [-12],[-12],                 # row 2
+                     [-9], [-9], [-9],              # row 3
+                  [-7], [-7], [-7], [-7],           # row 4
+               [-6], [-6], [-6], [-6], [-6],        # row 5
+            [-5], [-5], [-5], [-5], [-5], [-5],     # row 6
+               [-4], [-4], [-4], [-4], [-4],        # row 7
+                  [-3], [-3], [-3], [-3],           # row 8
+                     [-2], [-2], [-2],              # row 9
+                        [-1], [-1],                 # row 11
+                            [0]]                    # row 12
+
+        # distance calculations for player 2
+        self.scorePlayer1 = [[0],                   # row 1
+                         [-1], [-1],                # row 2
+                      [-2], [-2], [-2],             # row 3
+                   [-3], [-3], [-3], [-3],          # row 4
+                [-4], [-4], [-4], [-4], [-4],       # row 5
+             [-5], [-5], [-5], [-5], [-5], [-5],    # row 6
+                [-6], [-6], [-6], [-6], [-6],       # row 7
+                   [-7], [-7], [-7], [-7],          # row 8
+                      [-9], [-9], [-9],             # row 9
+                        [-12], [-12],               # row 11
+                           [-16]]                   # row 12
+
         self.n = n  # Number of pieces
         # Initialize empty board
         self.pieces = [None] * self.n
@@ -418,9 +445,24 @@ class Board():
 
 
     def is_game_over(self, player):
-        playerInd = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        player_index = 1 if player == 1 else 0  # Determines indexer based on player num (1 == P1 and -1 == P2)
+        opponent_index = 0 if player_index == 1 else 1
+
+        is_done = True
+        in_goal_count = 0
         for i in range(6):
-            curIndex = self.pieces[playerInd, i]
-            if not np.isin(curIndex, self.goal[playerInd]):  # This is the current checking for the main case
-                return False
-        return True  # TODO Need to check if other player is blocking the way, preventing a piece from being moved
+            cur_index = self.pieces[player_index, i]
+            if not np.isin(cur_index, self.goal[player_index]):  # This is the current checking for the main case
+                is_done = False
+            else:
+                in_goal_count += 1
+
+        # special case check
+        if in_goal_count == 5:
+            for i in range(0, 6):
+                cur_op_index = self.pieces[opponent_index, i]
+                if np.isin(cur_op_index, self.goal[player_index]):
+                    if cur_op_index == 35 or cur_op_index == 0:
+                        return True
+
+        return is_done  # TODO Need to check if other player is blocking the way, preventing a piece from being moved

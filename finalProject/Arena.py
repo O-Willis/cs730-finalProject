@@ -23,33 +23,44 @@ class Arena():
         itNum = 0
         while self.game.getGameEnded(board, cur_player) == 0:
             pg.display.update()
+            player_index = 0 if cur_player == 1 else 1
             itNum += 1
+            is_mcts_player = players[player_index].__name__ != 'play'  # FIXME DELETE LATER
+            valids = self.game.getValidMoves(board, cur_player)
             if verbose:  # Verbose represents debugging
                 assert self.display
-                print("Turn", str(itNum), "Player ", str(1) if cur_player == 1 else str(2))
+                player_turn = str(1) if cur_player == 1 else str(2)
+                player_type = players[player_index].__qualname__
+                player_type = player_type[0 : (len(player_type) - 5)] if not is_mcts_player else 'MCTSPlayer'
+                print(f"Turn {str(itNum)} Player {player_turn} ({player_type}) ")
                 self.display(display_surface, str(board), self.game.getCanonicalForm(board))
-            #  temp = self.game.getCanonicalForm(board, cur_player)
-            player_index = 0 if cur_player == 1 else 1
-            valids = self.game.getValidMoves(board, cur_player)
-            if verbose:
                 p_pieces = board.pieces[1 if cur_player == 1 else 0]
                 for i in range(0, len(valids)):  # iterate over moves
                     if valids[i]:
                         print(f"P{1 if cur_player == 1 else 2} piece[{i}] at {p_pieces[i]}:{valids[i]}")
-            action = players[player_index](display_surface, board, cur_player)
-            if action[1] not in valids[action[0]]:  # TODO recheck the logic here. POSSIBLE FOR 0
+
+            #  temp = self.game.getCanonicalForm(board, cur_player)
+            # if not is_mcts_player:
+                action = players[player_index](display_surface, board, cur_player)
+            # else:
+            #     action = players[player_index](board, cur_player)
+            if action[1] not in valids[action[0]]:
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
                 assert valids[action] > 0
+
             if verbose:
                 assert self.display
                 print(f"Moving {str(action[0])} to index {action[1]}")
+
             board, cur_player = self.game.getNextState(board, cur_player, action)
+
         if verbose:
             assert self.display
             pg.display.update()
             self.display(display_surface, str(board), self.game.getCanonicalForm(board))
             print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
+
         return cur_player * self.game.getGameEnded(board, cur_player)
 
     def playGames(self, num, verbose=False):

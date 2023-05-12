@@ -72,7 +72,7 @@ class Game():
     def getPlayerPieces(self, board):
         pass
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board):
         """
         Input:
             board: current board
@@ -87,18 +87,6 @@ class Game():
         """
         pass
 
-    def getSymmetries(self, board, pi):
-        """
-        Input:
-            board: current board
-            pi: policy vector of size self.getActionSize()
-        Returns:
-            symmForms: a list of [(board,pi)] where each tuple is a symmetrical
-                       form of the board and the corresponding pi vector. This
-                       is used when training the neural network from examples.
-        """
-        pass
-
     def stringRepresentation(self, board):
         """
         Input:
@@ -107,4 +95,7 @@ class Game():
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
         """
+        pass
+
+    def getSelection(self, board, cur_player):
         pass
