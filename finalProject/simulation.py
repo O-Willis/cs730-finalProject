@@ -35,7 +35,7 @@ humanPlayer = HumanPlayer(game).play
 rp = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 
-args = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
+args = dotdict({'numMCTSSims': 10, 'cpuct': 1.0})
 mcts = MCTSPlayer(game, args).play
 #mctsPlayer = lambda x, _: np.argmax(mcts.getActionProb(x, -1, temp=0))
 mctsPlayer = mcts
@@ -45,6 +45,17 @@ player2 = rp
 
 if 'human' in sys.argv:  # normally sets player 2 to specified opponent
     player1 = humanPlayer
+    if 'minimax' in sys.argv:
+        player2 = minimaxPlayer
+    elif 'mcts' in sys.argv:
+        player2 = mctsPlayer
+    elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Implementation
+        x = 0
+        # neural = NNet(game)
+        # neural.load_checkpoint('./pretrained_models/pytorch/', '100checkpoints_best.pth.tar')
+        # mcts2 = MCTS(game, neural, args)
+    else:
+        player2 = humanPlayer
 elif 'minimax' in sys.argv:
     player1 = minimaxPlayer
 elif 'mcts' in sys.argv:
@@ -67,6 +78,7 @@ if battle_type == 2:  # default 0 represents AI vs AI
         # mcts2 = MCTS(game, neural, args)
     else:
         player2 = humanPlayer
+
 
 arena = Arena.Arena(player1, player2, game, display=Game.display)
 

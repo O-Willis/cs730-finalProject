@@ -85,27 +85,11 @@ class RandPlayer:
         valid = self.game.getValidMoves(board, player)
         piece = self.get_valid_piece(valid)  # ensure that the valid array is not empty at index 'piece'
         move_index = np.random.randint(len(valid[piece]))
-        while self.is_better_move(player, board, p_pieces[piece], valid[piece][move_index]):
+        while not self.is_better_move(player, board, p_pieces[piece], valid[piece][move_index]):
             piece = self.get_valid_piece(valid)
             move_index = np.random.randint(len(valid[piece]))
         # time.sleep(0.5)
         return [piece, valid[piece][move_index]]
-
-    # def piece_in_goal(self, goal, pieces, piece, player, move, goal_index):
-    #     if (player == -1 and goal_index == 5) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
-    #         x = 0
-    #     if (player == 1 and goal_index == 0) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
-    #         x = 0
-    #     if goal_index == 6:  # If all pieces are in goal state, then return True for win condition
-    #         return True
-    #     elif move == goal[goal_index]:
-    #         return True
-    #     elif pieces[piece] == goal[goal_index]:  # If current piece is in goal, skip piece
-    #         return False
-    #     elif np.isin(goal[goal_index], pieces):  # If piece exists in the desired goal, then check other goal_indexes
-    #         return self.piece_in_goal(goal, pieces, piece, player, move, goal_index+player)  # player is either -1 (p2) or +1 (1p)
-    #     else:  # otherwise, return false
-    #         return False
 
     def get_valid_piece(self, valid):
         cur_piece = np.random.randint(self.game.getActionSize())
@@ -120,23 +104,7 @@ class RandPlayer:
         else:
             cur_piece_score = board.scorePlayer2[current_piece_index][0]
             valid_move_score = board.scorePlayer2[valid_move_index][0]
-        return valid_move_score <= cur_piece_score
-        # is_above_threshold = threshold > self.threshold  # select any move rather than moving up the board
-        # # goals = self.game.getPlayerGoals(player)
-        # if player == 1:
-        #     # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 0)
-        #     # if not is_piece_in_goal:
-        #     #     return True
-        #     # if not is_above_threshold:
-        #     #     return True
-        #     return valid[piece][move_index] <= p_pieces[piece]
-        # else:
-        #     # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 5)
-        #     # if not is_piece_in_goal:
-        #     #     return True
-        #     # if not is_above_threshold:
-        #     #     return True
-        #     return valid[piece][move_index] >= p_pieces[piece]
+        return valid_move_score >= cur_piece_score
 
 class MinMaxPlayer:
 
@@ -155,14 +123,13 @@ class MCTSPlayer:
         self.args = args
         self.root = None
 
-
-        self.Qsa = {}  # stores Q values for s,a
-        self.Nsa = {}  # contains the num of times edge s,a was visited
-        self.Ns = {}  # contains num times board s was visited
-        self.Ps = {}  # stores policy
-
-        self.Es = {}  # contains the bool for if a game has ended for board s
-        self.Vs = {}  # contains the valid moves for board s
+        # self.Qsa = {}  # stores Q values for s,a
+        # self.Nsa = {}  # contains the num of times edge s,a was visited
+        # self.Ns = {}  # contains num times board s was visited
+        # self.Ps = {}  # stores policy
+        #
+        # self.Es = {}  # contains the bool for if a game has ended for board s
+        # self.Vs = {}  # contains the valid moves for board s
 
     def play(self, display_surface, state, player):
         if self.root is None or state != self.root.state:
@@ -171,95 +138,8 @@ class MCTSPlayer:
 
         opposing_player = RandPlayer(self.game).play
 
-        move_len = self.root.get_node_move_len()
         for i in range(self.args.numMCTSSims):  # Iteration for loop
-            selected = self.root.selection(move_len, self.root)
-            result = self.root.simulate(selected.action, opposing_player)
-            self.root = self.root.backpropagate(result)
+            self.root = self.root.selection(opposing_player)
 
-    def getActionProb(self, canonical, cur_player=-1, temp=1):
-
-        for i in range(self.args.numMCTSSims):  # Iteration for loop
-            self.search(canonical, cur_player)  # Select and expand
-
-        s = self.game.stringRepresentation(canonical)
-        counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
-
-        if temp == 0:
-            best_actions = np.array(np.argwhere(counts == np.max(counts))).flatten()
-            best_action = np.random.choice(best_actions)
-            probability = [0] * len(counts)
-            probability[best_action] = 1
-            return probability
-
-        counts = [x ** (1. / temp) for x in counts]
-        counts_sum = float(sum(counts))
-        probs = [s / counts_sum for x in counts]
-        return probs
-
-    def search(self, board, cur_player):
-        canonical = self.game.getCanonicalForm(board)
-        s = self.game.stringRepresentation(canonical)
-
-        if s not in self.Es:  # Check if state s is not ended
-            self.Es[s] = self.game.getGameEnded(board, cur_player)
-        if self.Es[s] != 0:  # If getGameEnded returned indication that a player won
-            return -self.Es[s]  # Return opposite? FIXME idk whats happening here
-
-        selected = self.select(board, s, cur_player)
-
-        # if s not in self.Ps:  # If state is not in stored policy
-        #     # self.Ps[s], v = self.nnet.predict
-        #     self.Ps[]
-        #     self.Ps[s] = self.predict(canonical)  # Select & Expand
-        #     valids = self.game.getValidMoves(board, cur_player)
-        #     self.Ps[s] = self.Ps[s] * valids
-        #     sum_policy_s = np.sum(self.Ps[s])
-        #     if sum_policy_s > 0:
-        #         self.Ps[s] /= sum_policy_s  # normalize policy of state s
-        #     else:
-        #         # if a
-        #         self.Ps[s] = self.Ps[s] + valids
-        #         self.Ps[s] /= np.sum(self.Ps[s])
-        #
-        #     self.Vs[s] = valids
-        #     self.Ns[s] = 0
-        #     exit(0)  #  FIXME!!
-        #     return 0
-
-        valids = self.game.getValidMoves(board, cur_player)
-
-        valids = self.Vs[s]
-        cur_best = -float('inf')
-        best_act = -1
-
-        for a in range(self.game.getActionSize()):
-            if valids[a]:
-                if (s, a) in self.Qsa:
-                    u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
-                            1 + self.Nsa[(s, a)])
-                else:
-                    from finalProject.MCTS import EPS
-                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)
-
-                if u > cur_best:
-                    cur_best = u
-                    best_act = a
-
-        a = best_act
-        next_s, next_player = self.game.getNextState(board, cur_player, a)
-        next_s = self.game.getCanonicalForm(next_s, next_player)
-
-        v = self.search(next_s, next_player)
-
-        if (s, a) in self.Qsa:
-            self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)
-            self.Nsa[(s, a)] += 1
-
-        else:
-            self.Qsa[(s, a)] = v
-            self.Nsa[(s, a)] = 1
-
-        self.Ns[s] += 1  # This is fine at end of search
-        return -v
+        return self.root.best_child().action
 
