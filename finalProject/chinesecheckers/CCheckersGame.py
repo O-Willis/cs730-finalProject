@@ -2,7 +2,7 @@ from __future__ import print_function
 import sys
 import numpy as np
 from finalProject.Game import Game
-from finalProject.chinesecheckers.CCheckersLogic import Board
+from finalProject.chinesecheckers.CCheckersLogic import *
 from finalProject.gui_2 import *
 
 class CCheckersGame(Game):
@@ -48,10 +48,11 @@ class CCheckersGame(Game):
         # TODO Need to check if action is valid
         if action == [-1, -1]:
             return (board, -player)
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b = board.duplicate()
         piece, move = action
         b.execute_move(player, piece, move)
+        if (b.pieces != board.pieces).all():
+            assert 0
 
         return (b, -player)
 
@@ -66,8 +67,7 @@ class CCheckersGame(Game):
                         0 for invalid moves
         """
         valids = [0]*self.getActionSize()
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b = board.duplicate()
         legal_moves = b.get_legal_moves(player)
         if len(legal_moves) == 0:
             valids[-1]=1  # TODO not sure what this does!!!
@@ -84,8 +84,7 @@ class CCheckersGame(Game):
                small non-zero value for draw.
 
         """
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b = board.duplicate()
         if b.is_game_over(player):  # Player can be represented by either 1 or -1
             return 1
         if b.is_game_over(-player):
@@ -152,15 +151,14 @@ class CCheckersGame(Game):
     def getScore(self, board, player):
         player_index = 1 if player == 1 else 0
         score = 0
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b = board.duplicate()
         for i in range(6):
             if player_index:
-                score += board.scorePlayer1[b.pieces[player_index, i]][0]
-                score -= board.scorePlayer2[b.pieces[player_index-1, i]][0]
+                score += scorePlayer1[b.pieces[player_index, i]][0]
+                score -= scorePlayer2[b.pieces[player_index-1, i]][0]
             else:
-                score -= board.scorePlayer1[b.pieces[player_index+1, i]][0]
-                score += board.scorePlayer2[b.pieces[player_index, i]][0]
+                score -= scorePlayer1[b.pieces[player_index+1, i]][0]
+                score += scorePlayer2[b.pieces[player_index, i]][0]
         return score
 
     @staticmethod

@@ -1,9 +1,11 @@
 import numpy as np
 from finalProject.gui import *
-from finalProject.chinesecheckers.CCheckersNode import Node
+from finalProject.chinesecheckers.CCheckersNode import Node, createNode
+from finalProject.chinesecheckers.CCheckersLogic import *
 import pygame as pg
 import sys
 import time
+
 
 class HumanPlayer:
 
@@ -99,12 +101,28 @@ class RandPlayer:
 
     def is_better_move(self, player, board, current_piece_index, valid_move_index):
         if player == 1:
-            cur_piece_score = board.scorePlayer1[current_piece_index][0]
-            valid_move_score = board.scorePlayer1[valid_move_index][0]
+            cur_piece_score = scorePlayer1[current_piece_index][0]
+            valid_move_score = scorePlayer1[valid_move_index][0]
         else:
-            cur_piece_score = board.scorePlayer2[current_piece_index][0]
-            valid_move_score = board.scorePlayer2[valid_move_index][0]
+            cur_piece_score = scorePlayer2[current_piece_index][0]
+            valid_move_score = scorePlayer2[valid_move_index][0]
         return valid_move_score >= cur_piece_score
+
+
+def getPrioritizedPieces(board, player):
+    playerInd = 1 if player == 1 else 0
+    notPrioritized = []
+    prioritizedPieces = []
+    for i in range(6):
+        playerIndex = board.pieces[playerInd, i]
+        if np.isin(playerIndex, board.goal[playerInd]):
+            notPrioritized.append(i)
+        else:
+            prioritizedPieces.append(i)
+
+    prioritizedPieces += notPrioritized
+    return prioritizedPieces
+
 
 class MinMaxPlayer:
 
@@ -114,6 +132,61 @@ class MinMaxPlayer:
     def play(self, display_surface, board, player):
         valids = self.game.getValidMoves(board, 1)
         # TODO IMPLEMENT MCTS HERE
+
+
+def selection(node, opposing_player):
+    while not node.is_terminal():
+        expand(node)
+        node = node.best_child()  # otherwise, check best child and traverse in
+        if node.visits == 0:
+            break
+
+    if not node.is_terminal():  # If leaf node is hit from node.visits == 0
+        terminal_node, result = simulate(node, opposing_player)
+        node = terminal_node
+    else:
+        result = node.game.getGameEnded(node.state, node.cur_player)
+    backpropagate(node, result)
+
+
+def expand(node):  # logic to create child nodes
+    move_len = node.get_node_move_len()
+    if not node.is_fully_expanded(move_len):
+        rand_move = np.random.randint(len(node.untried_moves))
+        action = node.untried_moves[rand_move]  # Random selection is here
+        board_copy = node.state.duplicate()
+        new_state, next_player = node.game.getNextState(board_copy, node.cur_player, action)
+        child_node = createNode(node.game, new_state, node.cur_player, node, action)
+        node.children.append(child_node)
+        node.untried_moves.remove(action)
+
+def simulate(node, opposing_player):  # logic to simulate a game from this state
+    is_first_move = True
+    cur_state = node.state.duplicate()
+    while not node.game.getGameEnded(node.state, node.cur_player):
+        if is_first_move:
+            next_state, other_player = node.game.getNextState(cur_state, node.cur_player, node.action)
+            is_first_move = False
+        else:
+            random_move = node.get_contrained_move()
+            next_state, other_player = node.game.getNextState(cur_state, node.cur_player, random_move)
+            child_node = createNode(node.game, next_state, other_player, node, random_move)
+            node.children.append(child_node)
+            node = child_node
+
+        action = opposing_player(None, next_state, other_player)
+        cur_state, _ = node.game.getNextState(next_state, other_player, action)
+    return node, node.game.getGameEnded(node.state, node.cur_player)
+
+
+def backpropagate(node, result):  # logic to update node statistics
+    while node.parent:
+        node.visits += 1
+        node.wins += result
+        node = node.parent
+    node.visits += 1
+    node.wins += result
+    return node
 
 
 class MCTSPlayer:
@@ -132,14 +205,11 @@ class MCTSPlayer:
         # self.Vs = {}  # contains the valid moves for board s
 
     def play(self, display_surface, state, player):
-        if self.root is None or state != self.root.state:
-            self.root = Node(self.game, state, player)
-            self.root.visits += 1
-
         opposing_player = RandPlayer(self.game).play
-
+        root = createNode(self.game, state, player, None, None)
+        global cacheNodes
+        cacheNodes = {}
         for i in range(self.args.numMCTSSims):  # Iteration for loop
-            self.root = self.root.selection(opposing_player)
-
-        return self.root.best_child().action
-
+            selection(root, opposing_player)
+        print(f"[[[[[[[[[[[[[[[[[[[[ Wins: {root.wins} ]]]]]]]]]]]]]]]]]]]]")
+        return root.best_child().action
