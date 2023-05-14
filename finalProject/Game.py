@@ -66,7 +66,12 @@ class Game():
         """
         pass
 
+
+    def getScore(self, board, player):
+        pass
+
     def getPlayerGoals(self, player):
+
         pass
 
     def getPlayerPieces(self, board):
@@ -106,5 +111,27 @@ class Game():
         Returns:
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
+        """
+        pass
+
+    def getStateValues(self, board, player, maxDepth):
+        """
+        Input:
+            board: current board
+            player: current player
+            index: current index of player
+        Returns:
+            a value for state
+        """
+        pass
+
+    def minimax(self, board, player, maxDepth, playerHeuristic, maxP):
+        """
+        Input:
+            board: current board
+            player: current player
+            maxDepth: maxDepth that we want to reach
+        Returns:
+            a pass
         """
         pass

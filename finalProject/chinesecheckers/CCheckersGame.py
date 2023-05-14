@@ -2,14 +2,15 @@ from __future__ import print_function
 import sys
 import numpy as np
 from finalProject.Game import Game
-from finalProject.chinesecheckers.CCheckersLogic import Board
+from finalProject.chinesecheckers.CCheckersLogic import *
 from finalProject.gui_2 import *
+
 
 class CCheckersGame(Game):
     pit_content = {
         -1: "2",
         +0: "-",
-        +1:"1"
+        +1: "1"
     }
 
     @staticmethod
@@ -48,10 +49,13 @@ class CCheckersGame(Game):
         # TODO Need to check if action is valid
         if action == [-1, -1]:
             return (board, -player)
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b = board.duplicate()
         piece, move = action
         b.execute_move(player, piece, move)
+
+        if (b.pieces != board.pieces).all():
+            assert 0
+
 
         return (b, -player)
 
@@ -65,12 +69,11 @@ class CCheckersGame(Game):
                         moves that are valid from the current board and player,
                         0 for invalid moves
         """
-        valids = [0]*self.getActionSize()
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        valids = [0] * self.getActionSize()
+        b = board.duplicate()
         legal_moves = b.get_legal_moves(player)
         if len(legal_moves) == 0:
-            valids[-1]=1  # TODO not sure what this does!!!
+            valids[-1] = 1  # TODO not sure what this does!!!
             return np.array(valids)
         return legal_moves
 
@@ -84,8 +87,7 @@ class CCheckersGame(Game):
                small non-zero value for draw.
 
         """
-        b = Board(self.n)
-        b.pieces = np.copy(board.pieces)
+        b = board.duplicate()
         if b.is_game_over(player):  # Player can be represented by either 1 or -1
             return 1
         if b.is_game_over(-player):
@@ -111,18 +113,6 @@ class CCheckersGame(Game):
         map[board[1]] = 1
         return map  # Returns the np.array as the player's state
 
-    def getSymmetries(self, board, pi):
-        """
-        Input:
-            board: current board
-            pi: policy vector of size self.getActionSize()
-        Returns:
-            symmForms: a list of [(board,pi)] where each tuple is a symmetrical
-                       form of the board and the corresponding pi vector. This
-                       is used when training the neural network from examples.
-        """
-        return []
-
     def stringRepresentation(self, board):
         """
         Input:
@@ -131,12 +121,48 @@ class CCheckersGame(Game):
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
         """
-        return str(board)
+        return board.tostring()
+
+    ''' 
+    ========= Score of Player 1 =========
+                      0      goal
+                   -1  -1  
+                 -2  -2  -2  
+               -3  -3  -3  -3  
+             -4  -4  -4  -4  -4  
+           -5  -5  -5  -5  -5  -5  
+             -6  -6  -6  -6  -6  
+               -7  -7  -7  -7  
+                 -9  -9  -9  
+                  -12 -12  
+                    -16    starting
+
+    ========= Score of Player 2 =========
+                    -16     starting
+                  -12 -12  
+                 -9  -9  -9  
+               -7  -7  -7  -7  
+             -6  -6  -6  -6  -6  
+           -5  -5  -5  -5  -5  -5  
+             -4  -4  -4  -4  -4  
+               -3  -3  -3  -3  
+                 -2  -2  -2  
+                   -1  -1  
+                      0     goal 
+    '''
 
     def getScore(self, board, player):
-        board = Board(self.n)
-        board.pieces = np.copy(board)
-        return board.countDiff(player)  # TODO NEED TO IMPLEMENT
+        player_index = 1 if player == 1 else 0
+        score = 0
+        b = board.duplicate()
+        for i in range(6):
+            if player_index:
+                score += scorePlayer1[b.pieces[player_index, i]][0]
+                score -= scorePlayer2[b.pieces[player_index - 1, i]][0]
+            else:
+                score -= scorePlayer1[b.pieces[player_index + 1, i]][0]
+                score += scorePlayer2[b.pieces[player_index, i]][0]
+        return score
 
     @staticmethod
     def display(display, board, cannonical):
