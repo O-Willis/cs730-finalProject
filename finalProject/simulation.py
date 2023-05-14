@@ -22,43 +22,6 @@ def failCode(errorCode):
         print(f"NOTICE: input does not match the required -play command format")
         exit(0)
 
-
-# def getPlayers(type):
-#     humanPlayer = HumanPlayer(game).play
-#     rp = RandPlayer(game).play
-#     minimaxPlayer = MinMaxPlayer(game).play
-#     mctsPlayer = MCTSPlayer(game).play
-#     player1 = rp
-#     player2 = rp
-#     if type == 1:  # default 0 represents AI vs AI
-#         if 'minimax' in sys.argv:
-#             player1 = humanPlayer  # TODO change this later
-#             player2 = minimaxPlayer
-#         elif 'mcts' in sys.argv:
-#             player1 = mctsPlayer  # TODO change this later
-#             player2 = mctsPlayer
-#             n2p = 0
-#             # n2 = NNet(game)  TODO add this in after MCTS standalone + NNet Implementation
-#             # n2.load_checkpoint('./pretrained_models/othello/pytorch/', '8x8_100checkpoints_best.pth.tar')
-#             # args2 = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
-#             # mcts2 = MCTS(g, n2, args2)
-#             # n2p = lambda x: np.argmax(mcts2.getActionProb(x, temp=0))
-#
-#             # player2 = n2p
-#     if type == 2:
-#         player2 = humanPlayer
-#         if 'minimax' in sys.argv:
-#             player1 = minimaxPlayer  # TODO change this later
-#         elif 'mcts' in sys.argv:
-#             player1 = player1  # TODO change this later
-#         elif 'rand' in sys.argv:
-#             player1 = rp  # TODO change this later
-#         else:
-#             player1 = humanPlayer
-#
-#     return player1, player2
-
-
 print(f"Arguments count: {len(sys.argv)}")
 battle_type = 0
 if '-play' in sys.argv:
@@ -87,7 +50,7 @@ player2 = minimaxPlayer
 if 'human' in sys.argv:  # normally sets player 2 to specified opponent
     player1 = humanPlayer
 elif 'minimax' in sys.argv:
-    player1 = minimaxPlayer
+    player1 = alphaPlayer
 elif 'mcts' in sys.argv:
     player1 = mctsPlayer
 elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Implementation

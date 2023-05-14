@@ -134,22 +134,6 @@ class RandPlayer:
                 return True
             return valid[piece][move_index] >= p_pieces[piece]
 
-
-def getPrioritizedPieces(board, player):
-    playerInd = 1 if player == 1 else 0
-    notPrioritized = []
-    prioritizedPieces = []
-    for i in range(6):
-        playerIndex = board.pieces[playerInd, i]
-        if np.isin(playerIndex, board.goal[playerInd]):
-            notPrioritized.append(i)
-        else:
-            prioritizedPieces.append(i)
-
-    prioritizedPieces += notPrioritized
-    return prioritizedPieces
-
-
 class MinMaxPlayer:
     # Player 1 is maximizing player / Player 2 is minimizing player
     def __init__(self, game):
@@ -172,9 +156,8 @@ class MinMaxPlayer:
             index = -1
             valids = self.game.getValidMoves(board, player)
 
-            sortedPieces = getPrioritizedPieces(board, player)
             randomListMax = []
-            for i in sortedPieces:
+            for i in range(6):
                 for j in range(len(valids[i])):
                     originalBoard = deepcopy(board)
                     board, _ = self.game.getNextState(board, player, [i,valids[i][j]])
@@ -207,9 +190,8 @@ class MinMaxPlayer:
             bestValue = 999999999999999999999999999
             valids = self.game.getValidMoves(board, player)
 
-            sortedPieces = getPrioritizedPieces(board, player)
             randomListMin = []
-            for i in sortedPieces:
+            for i in range(6):
                 for j in range(len(valids[i])):
                     originalBoard = deepcopy(board)
                     board, _ = self.game.getNextState(board, player, [i, valids[i][j]])
@@ -246,14 +228,12 @@ class AlphaBetaPlayer:
         print(f"Valid moves: {valid}")
         alpha = float('-inf')
         beta = float('inf')
-        numNode = 0
-        _, pieceToMove, nextIndex, numNode = self.minimax(board, player, 2, player, True, alpha, beta, numNode)
-        print(f"Num of nodes explored in this turn: {numNode}")
-        return [pieceToMove, nextIndex, numNode]
+        _, pieceToMove, nextIndex = self.minimax(board, player, 4, player, True, alpha, beta)
+        return [pieceToMove, nextIndex]
 
-    def minimax(self, board, player, maxDepth, playerHeuristic, maxP, alpha, beta, numNode):
+    def minimax(self, board, player, maxDepth, playerHeuristic, maxP, alpha, beta):
         if maxDepth == 0 or self.game.getGameEnded(board, player) != 0:
-            return [self.game.getScore(board, playerHeuristic), None, None, numNode]
+            return [self.game.getScore(board, playerHeuristic), None, None]
 
         if maxP: # maximizing player
             bestValue = float('-inf')
@@ -265,9 +245,8 @@ class AlphaBetaPlayer:
             for i in range(6):
                 for j in range(len(valids[i])):
                     originalBoard = deepcopy(board)
-                    numNode += 1
                     board, _ = self.game.getNextState(board, player, [i,valids[i][j]])
-                    actionValue, _, _, numNode = self.minimax(board, -player, maxDepth - 1, playerHeuristic, False, alpha, beta, numNode)
+                    actionValue, _, _ = self.minimax(board, -player, maxDepth - 1, playerHeuristic, False, alpha, beta)
 
                     if actionValue > bestValue:
                         bestValue = actionValue
@@ -283,7 +262,7 @@ class AlphaBetaPlayer:
                 if isDone:
                     break
 
-            return [bestValue, piece, index, numNode]
+            return [bestValue, piece, index]
 
         else: # minimizing player
             piece = -1
@@ -295,12 +274,10 @@ class AlphaBetaPlayer:
             for i in range(6):
                 for j in range(len(valids[i])):
                     originalBoard = deepcopy(board)
-                    numNode += 1
                     board, _ = self.game.getNextState(board, player, [i, valids[i][j]])
-                    actionValue, _, _, numNode = self.minimax(board, -player, maxDepth - 1, playerHeuristic, True, alpha, beta, numNode)
+                    actionValue, _, _ = self.minimax(board, -player, maxDepth - 1, playerHeuristic, True, alpha, beta)
 
                     if actionValue < bestValue:
-                        randomListMin = []
                         bestValue = actionValue
                         index = valids[i][j]
                         piece = i
@@ -313,7 +290,7 @@ class AlphaBetaPlayer:
                 if isDone:
                     break
 
-            return [bestValue, piece, index, numNode]
+            return [bestValue, piece, index]
 
 
 class MCTSPlayer:
