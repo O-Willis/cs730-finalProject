@@ -35,7 +35,8 @@ humanPlayer = HumanPlayer(game).play
 rp = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 
-args = dotdict({'numMCTSSims': 10, 'cpuct': 1.0})
+# args = dotdict({'numMCTSSims': 10, 'cpuct': 1.0})
+args = dotdict({'numMCTSSims': 100})
 mcts = MCTSPlayer(game, args).play
 #mctsPlayer = lambda x, _: np.argmax(mcts.getActionProb(x, -1, temp=0))
 mctsPlayer = mcts

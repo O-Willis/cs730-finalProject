@@ -7,18 +7,6 @@ from finalProject.chinesecheckers.CCheckersLogic import *
 # Visited node should not be expanded
 # Can expand only one node at a time
 
-cacheNodes = {}
-base = np.array([[1.0, 40.0, 40.0**2, 40.0**3, 40.0**4, 40.0**5], [40.0**6, 40.0**7, 40.0**8, 40.0**9, 40.0**10, 40.0**11]])
-def createNode(game, state, player, parent, action):
-    # hash = (id(parent), np.sum(base * state.pieces))
-    # hash = (id(parent), tuple(map(tuple, state.pieces)))
-    # if hash in cacheNodes:
-    #     assert (state.pieces == cacheNodes[hash].state.pieces).all()
-    #     return cacheNodes[hash]
-    node = Node(game, state, player, parent, action)
-    # cacheNodes[hash] = node
-    return node
-
 class Node:
 
     def __init__(self, game, state, player, parent=None, action=None):
@@ -47,51 +35,30 @@ class Node:
         self.wins = 0
         self.visits = 0
 
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        self._state = value
-
-    # def __eq__(self, item):
-    #     if isinstance(item, Node):
-    #         return base * self.state.pieces == base * item.state.pieces
-    #     try:
-    #         # Accept any int-like thing
-    #         return base * self.state.pieces == base * item.state.pieces
-    #     except TypeError:
-    #         return NotImplemented
-    #
-    # def __hash__(self):
-    #     return base * self.state.pieces
-
     def best_child(self, c=1.4):
         # logic to select the best child node using the UCB1 formula
         best_child = None
         best_score = -float('inf')
-        if self.action is None:
-            x = 0
         for child in self.children:
-            if child.visits == 0:
-                return child
-            exploit_term = child.wins / child.visits
             cur_node_visits = max(1, self.visits)  # Makes sure visits is 1 even if its 0
-            child_parent_visits = max(1, child.parent.visits)
-            explore_term = c * np.sqrt(np.log(child_parent_visits) / cur_node_visits)
+            child_node_visits = max(1, child.visits)
+            exploit_term = child.wins / child_node_visits
+            explore_term = c * np.sqrt(np.log(child.parent.visits) / cur_node_visits)
             uct_score = exploit_term + explore_term
             if uct_score > best_score:
                 best_child = child
                 best_score = uct_score
         return best_child
 
-    def is_fully_expanded(self, legal_move_num):  # logic to check if all child nodes have been created
+    def is_fully_expanded(self):  # logic to check if all child nodes have been created
         return len(self.untried_moves) == 0
 
     def is_terminal(self):  # logic to check if the game is over
         # return True if the game is over, False otherwise
         return self.game.getGameEnded(self.state, self.cur_player)
+
+    def is_leaf(self):
+        return int(self.visits == 0)
 
     def get_node_move_len(self):
         return self.node_move_len
