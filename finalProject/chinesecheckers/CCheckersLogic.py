@@ -269,12 +269,6 @@ class Board:
 
     def has_legal_moves(self, player):
         """
-        TODO might need to reimplement as goal state
-            ie. when player has crossed all pieces
-            |
-            Might not need to in edge case for if other player traps a piece
-        """
-        """
         Receive all legal moves given a color
         """
         cur_moves = self.get_legal_moves(player)
@@ -329,7 +323,7 @@ class Board:
 
 
 
-    def execute_move(self, player, player_piece, action):  # TODO might need to change framework to work with new parameters
+    def execute_move(self, player, player_piece, action):
         """
         Performs the given move on the board.
         In terms of cutting down on calculation size,
@@ -354,9 +348,6 @@ class Board:
 
         if action in moves[player_piece]:
             self.pieces[player_index, player_piece] = action
-
-        # TODO need to implement turn based rotating on single move
-        #   as well as multi-move capabilities based on jump move
 
         if action_is_single:
             return True  # Return True if changePlayers

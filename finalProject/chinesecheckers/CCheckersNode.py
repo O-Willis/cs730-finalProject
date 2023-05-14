@@ -1,6 +1,3 @@
-import random
-import numpy as np
-from operator import index
 from finalProject.chinesecheckers.CCheckersLogic import *
 
 

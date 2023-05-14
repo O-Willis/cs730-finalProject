@@ -55,8 +55,11 @@ class Arena:
             assert self.display
             pg.display.update()
             self.display(display_surface, str(board), self.game.getCanonicalForm(board))
-            print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
-
+            if self.game.getGameEnded(board, 1) == -1:
+                wonPlayer = " Player 2 win!"
+            else:
+                wonPlayer = " Player 1 win!"
+            print(f"Game over: Turn {str(itNum)}\nResult {wonPlayer}")
         return cur_player * self.game.getGameEnded(board, cur_player)
 
     def playGames(self, num, verbose=False):

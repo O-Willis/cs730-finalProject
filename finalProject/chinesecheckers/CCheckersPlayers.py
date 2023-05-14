@@ -1,12 +1,6 @@
 import random
-
-import numpy as np
-from finalProject.gui import *
 from finalProject.chinesecheckers.CCheckersNode import Node
 from finalProject.chinesecheckers.CCheckersLogic import *
-import pygame as pg
-import sys
-import time
 from copy import deepcopy
 
 
@@ -17,9 +11,6 @@ class HumanPlayer:
 
     def play(self, display_surface, board, player):
         valid = self.game.getValidMoves(board, player)  # Get valid moves as list
-        # pieces = self.game.getNumpyFromCannonical(board)
-        highlighted_moves = set()
-        selected_pit = -1
         entered_input = False
         while True:  # While loop for input
             a = input()
@@ -34,43 +25,6 @@ class HumanPlayer:
                     print("Incorrect input!!")
             else:
                 break
-
-            # highlighted_moves, temp_select = draw_board(display_surface, board, player, highlighted_moves, selected_pit)
-            # pg.display.update()
-            # if temp_select != -1:
-            #     selected_pit = temp_select
-            # user_move = -1
-            # for event in pg.event.get():
-            #
-            #     if event.type == pg.MOUSEBUTTONDOWN:
-            #         position = pg.mouse.get_pos()
-            #         highlighted_moves, temp_select = draw_board(display_surface, board, player, highlighted_moves, selected_pit)
-            #         pg.display.update()
-            #         # piece, user_move = [int(x) for x in a.split(' ')]
-            #         piece = int(piece)
-            #         if piece != -1:  # -1 will be the optional termination command
-            #             user_move = int(user_move)
-            #             if user_move in valid[piece]:
-            #                 break
-            #             else:
-            #                 print("Incorrect input!!")
-            #             # if piece < 0 or piece > 6:
-            #
-            #             # if isMovingPiece(event.pos):
-            #
-            #
-            #             # while userMove not in board.get_legal_moves(player_turn)[piece]:
-            #             #     print(f"current move: {piece} to {userMove}")
-            #             #     piece, userMove = input("That is not a valid piece move! Please retry!: ").split()
-            #             #     piece = int(piece)
-            #             #     userMove = int(userMove)
-            #             #
-            #             # if board.execute_move(player_turn, piece, userMove) == True:
-            #             #     player_turn = (player_turn % 2) + 1
-            #
-            #         else:
-            #             entered_input = True
-            #             break
 
             if entered_input is True:
                 break
@@ -111,24 +65,7 @@ class RandPlayer:
             valid_move_score = scorePlayer2[valid_move_index][0]
         return valid_move_score >= cur_piece_score
 
-
-def getPrioritizedPieces(board, player):
-    playerInd = 1 if player == 1 else 0
-    notPrioritized = []
-    prioritizedPieces = []
-    for i in range(6):
-        playerIndex = board.pieces[playerInd, i]
-        if np.isin(playerIndex, board.goal[playerInd]):
-            notPrioritized.append(i)
-        else:
-            prioritizedPieces.append(i)
-
-    prioritizedPieces += notPrioritized
-    return prioritizedPieces
-
-
 class MinMaxPlayer:
-    # Player 1 is maximizing player / Player 2 is minimizing player
     def __init__(self, game):
         self.game = game
 
@@ -136,6 +73,7 @@ class MinMaxPlayer:
         valid = self.game.getValidMoves(board, player)
         print(f"Valid moves: {valid}")
 
+        # calling minimax and waiting action information
         _, pieceToMove, nextIndex = self.minimax(board, player, 2, player, True)
         return [pieceToMove, nextIndex]
 
@@ -144,7 +82,7 @@ class MinMaxPlayer:
             return [self.game.getScore(board, playerHeuristic), None, None]
 
         if maxP: # maximizing player
-            bestValue = -9999999999999999999999999
+            bestValue = float('-inf')
             piece = -1
             index = -1
             valids = self.game.getValidMoves(board, player)
@@ -180,7 +118,7 @@ class MinMaxPlayer:
         else: # minimizing player
             piece = -1
             index = -1
-            bestValue = 999999999999999999999999999
+            bestValue = float('inf')
             valids = self.game.getValidMoves(board, player)
 
             randomListMin = []
@@ -212,7 +150,6 @@ class MinMaxPlayer:
             return [bestValue, piece, index]
 
 class AlphaBetaPlayer:
-    # Player 1 is maximizing player / Player 2 is minimizing player
     def __init__(self, game):
         self.game = game
 

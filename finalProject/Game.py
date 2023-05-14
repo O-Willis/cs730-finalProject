@@ -67,6 +67,13 @@ class Game:
 
 
     def getScore(self, board, player):
+        """
+        Input:
+            board: current board
+            player: current player (1 or -1)
+        Returns:
+            the score of the game state, depeneding on both players location
+        """
         pass
 
     def getPlayerGoals(self, player):
@@ -101,24 +108,15 @@ class Game:
         """
         pass
 
-    def getStateValues(self, board, player, maxDepth):
-        """
-        Input:
-            board: current board
-            player: current player
-            index: current index of player
-        Returns:
-            a value for state
-        """
-        pass
-
     def minimax(self, board, player, maxDepth, playerHeuristic, maxP):
         """
         Input:
             board: current board
             player: current player
             maxDepth: maxDepth that we want to reach
+            playerHeuristic: used to find score for the player that started minimax
+            maxP: used to determine maximizing/minimizing player
         Returns:
-            a pass
+            the best action
         """
         pass

@@ -1,6 +1,4 @@
 from __future__ import print_function
-import sys
-import numpy as np
 from finalProject.Game import Game
 from finalProject.chinesecheckers.CCheckersLogic import *
 from finalProject.gui_2 import *
