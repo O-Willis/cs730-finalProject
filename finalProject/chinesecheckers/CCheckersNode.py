@@ -36,7 +36,7 @@ class Node:
         best_child = None
         best_score = -float('inf')
         for child in self.children:
-            cur_node_visits = max(1, self.visits)  # Makes sure visits is 1 even if its 0
+            cur_node_visits = max(1, child.visits)  # Makes sure visits is 1 even if its 0
             child_node_visits = max(1, child.visits)
             exploit_term = child.wins / child_node_visits
             explore_term = c * np.sqrt(np.log(child.parent.visits) / cur_node_visits)

@@ -39,7 +39,7 @@ class Arena:
                     for i in range(0, len(valids)):  # iterate over moves
                         if valids[i]:
                             print(f"P{1 if cur_player == 1 else 2} piece[{i}] at {p_pieces[i]}:{valids[i]}")
-                action = players[player_index](display_surface, board, cur_player)
+            action = players[player_index](display_surface, board, cur_player)
             if action[1] not in valids[action[0]]:
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
@@ -67,20 +67,24 @@ class Arena:
         oneWon = 0
         twoWon = 0
 
-        for _ in tqdm(range(num), desc="Arena.playGames (1)"):
+        for _ in tqdm.tqdm(range(num), desc="Arena.playGames (1)"):
             gameResult = self.playGame(verbose=verbose)
             if gameResult == 1:
+                print("player 1 won!")
                 oneWon += 1
             elif gameResult == -1:
                 twoWon += 1
+                print("player 2 won!")
 
         self.player1, self.player2 = self.player2, self.player1
 
         for _ in tqdm(range(num), desc="Arena.playGames (2)"):
             gameResult = self.playGame(verbose=verbose)
             if gameResult == -1:
+                print("player 1 won!")
                 oneWon += 1
             elif gameResult == 1:
+                print("player 2 won!")
                 twoWon += 1
 
         return oneWon, twoWon

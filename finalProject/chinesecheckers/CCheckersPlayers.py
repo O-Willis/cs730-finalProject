@@ -71,7 +71,6 @@ class MinMaxPlayer:
 
     def play(self, display_surface, board, player):
         valid = self.game.getValidMoves(board, player)
-        print(f"Valid moves: {valid}")
 
         # calling minimax and waiting action information
         _, pieceToMove, nextIndex = self.minimax(board, player, 2, player, True)
@@ -155,7 +154,6 @@ class AlphaBetaPlayer:
 
     def play(self, display_surface, board, player):
         valid = self.game.getValidMoves(board, player)
-        print(f"Valid moves: {valid}")
         alpha = float('-inf')
         beta = float('inf')
         _, pieceToMove, nextIndex = self.minimax(board, player, 4, player, True, alpha, beta)
