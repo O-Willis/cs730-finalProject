@@ -3,10 +3,12 @@ import random
 import numpy as np
 from finalProject.gui import *
 from finalProject.chinesecheckers.CCheckersNode import Node
+from finalProject.chinesecheckers.CCheckersLogic import *
 import pygame as pg
 import sys
 import time
 from copy import deepcopy
+
 
 class HumanPlayer:
 
@@ -86,31 +88,13 @@ class RandPlayer:
         player_index = 1 if player == 1 else 0
         p_pieces = board.pieces[player_index]
         valid = self.game.getValidMoves(board, player)
-        threshold = np.random.randint(100)
         piece = self.get_valid_piece(valid)  # ensure that the valid array is not empty at index 'piece'
         move_index = np.random.randint(len(valid[piece]))
-        while not self.is_better_move(valid, threshold, player, p_pieces, piece, move_index):
+        while not self.is_better_move(player, board, p_pieces[piece], valid[piece][move_index]):
             piece = self.get_valid_piece(valid)
             move_index = np.random.randint(len(valid[piece]))
-            threshold = np.random.randint(100)
         # time.sleep(0.5)
         return [piece, valid[piece][move_index]]
-
-    # def piece_in_goal(self, goal, pieces, piece, player, move, goal_index):
-    #     if (player == -1 and goal_index == 5) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
-    #         x = 0
-    #     if (player == 1 and goal_index == 0) and (move == goal[goal_index] or pieces[piece] == goal[goal_index]):
-    #         x = 0
-    #     if goal_index == 6:  # If all pieces are in goal state, then return True for win condition
-    #         return True
-    #     elif move == goal[goal_index]:
-    #         return True
-    #     elif pieces[piece] == goal[goal_index]:  # If current piece is in goal, skip piece
-    #         return False
-    #     elif np.isin(goal[goal_index], pieces):  # If piece exists in the desired goal, then check other goal_indexes
-    #         return self.piece_in_goal(goal, pieces, piece, player, move, goal_index+player)  # player is either -1 (p2) or +1 (1p)
-    #     else:  # otherwise, return false
-    #         return False
 
     def get_valid_piece(self, valid):
         cur_piece = np.random.randint(self.game.getActionSize())
@@ -118,23 +102,30 @@ class RandPlayer:
             cur_piece = np.random.randint(self.game.getActionSize())
         return cur_piece
 
-    def is_better_move(self, valid, threshold, player, p_pieces, piece, move_index):
-        is_above_threshold = threshold > self.threshold  # select any move rather than moving up the board
-        # goals = self.game.getPlayerGoals(player)
+    def is_better_move(self, player, board, current_piece_index, valid_move_index):
         if player == 1:
-            # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 0)
-            # if not is_piece_in_goal:
-            #     return True
-            # if not is_above_threshold:
-            #     return True
-            return valid[piece][move_index] <= p_pieces[piece]
+            cur_piece_score = scorePlayer1[current_piece_index][0]
+            valid_move_score = scorePlayer1[valid_move_index][0]
         else:
-            # is_piece_in_goal = self.piece_in_goal(goals, pieces, piece, player, valid[piece][move_index], 5)
-            # if not is_piece_in_goal:
-            #     return True
-            # if not is_above_threshold:
-            #     return True
-            return valid[piece][move_index] >= p_pieces[piece]
+            cur_piece_score = scorePlayer2[current_piece_index][0]
+            valid_move_score = scorePlayer2[valid_move_index][0]
+        return valid_move_score >= cur_piece_score
+
+
+def getPrioritizedPieces(board, player):
+    playerInd = 1 if player == 1 else 0
+    notPrioritized = []
+    prioritizedPieces = []
+    for i in range(6):
+        playerIndex = board.pieces[playerInd, i]
+        if np.isin(playerIndex, board.goal[playerInd]):
+            notPrioritized.append(i)
+        else:
+            prioritizedPieces.append(i)
+
+    prioritizedPieces += notPrioritized
+    return prioritizedPieces
+
 
 class MinMaxPlayer:
     # Player 1 is maximizing player / Player 2 is minimizing player
@@ -294,46 +285,66 @@ class AlphaBetaPlayer:
 
             return [bestValue, piece, index]
 
+def selection(node, opposing_player):
+    result = 1
+    while not node.is_terminal():
+        is_leaf = node.is_leaf()
+        node.visits += is_leaf
+        expand(node)
+        node = node.best_child()
+        if is_leaf:
+            node, result = simulate(node, opposing_player)
+            break
+    backpropagate(node, result)
+
+def expand(node):  # logic to create child nodes
+    if not node.is_fully_expanded():
+        rand_move = np.random.randint(len(node.untried_moves))
+        action = node.untried_moves[rand_move]  # Random selection is here
+        board_copy = node.state.duplicate()
+        new_state, next_player = node.game.getNextState(board_copy, node.cur_player, action)
+        child_node = Node(node.game, new_state, node.cur_player, node, action)
+        node.children.append(child_node)
+        node.untried_moves.remove(action)
+
+def simulate(node, opposing_player):  # logic to simulate a game from this state
+    is_first_move = True
+    while not node.game.getGameEnded(node.state, node.cur_player):
+        if is_first_move:
+            temp_state, temp_player = node.game.getNextState(node.state, node.cur_player, node.action)
+            is_first_move = False
+        else:
+            random_move = node.get_contrained_move()
+            temp_state, temp_player = node.game.getNextState(node.state, node.cur_player, random_move)
+            child_node = Node(node.game, temp_state, temp_player, node, random_move)
+            node.children.append(child_node)
+            node = child_node
+        action = opposing_player(None, temp_state, temp_player)
+        node.state, node.cur_player = node.game.getNextState(temp_state, temp_player, action)
+    return node, node.game.getGameEnded(node.state, node.cur_player)
+
+def backpropagate(node, result):  # logic to update node statistics
+    while node.parent:
+        node.visits += 1
+        node.wins += result
+        node = node.parent
+    node.visits += 1
+    node.wins += result
+    return node
+
 
 class MCTSPlayer:
 
     def __init__(self, game, args):
-        self.root = None
         self.game = game
         self.args = args
+        self.root = None
 
-    def get_action(self, state):
-        if self.root is None or state != self.root.state:
-            self.root = Node(state)
+    def play(self, display_surface, state, player):
+        opposing_player = RandPlayer(self.game).play
+        # root = createNode(self.game, state, player, None, None)
+        root = Node(self.game, state, player, None, None)
 
-        for i in range(self.args.numMCTSSims):
-            node = self.root
-            while not node.is_fully_expanded() and not node.is_terminal():
-                node = node.expand()
-
-            if node.is_terminal():
-                result = node.reward()
-            else:
-                child = node.best_child()
-                result = child.simulate()
-            node.backpropagate(result)
-
-        best_child = self.root.best_child(c_param=0)
-        return best_child.action
-
-    def get_legal_moves(self):
-        legal_moves = []
-        # logic to get all legal moves
-        return legal_moves
-
-    def make_move(self, move):
-        self.player_turn = 2 if self.player_turn == 1 else 1
-
-    def is_game_over(self):
-        # logic to check if the game is over
-        # return True if the game is over, False otherwise
-        return False  # replace with actual logic
-
-    def play(self, display_surface, board, player):
-        valids = self.game.getValidMoves(board, 1)
-        # TODO IMPLEMENT MCTS HERE
+        for i in range(self.args.numMCTSSims):  # Iteration for loop
+            selection(root, opposing_player)
+        return root.best_child().action

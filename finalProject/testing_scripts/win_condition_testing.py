@@ -1,10 +1,10 @@
 import logging
 
-import coloredlogs
+# import coloredlogs
 
 from finalProject.chinesecheckers.CCheckersLogic import Board
 
-board = Board()
+board = Board(6)
 newStr = str(board)
 print(str(board))
 print()

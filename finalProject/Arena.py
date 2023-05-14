@@ -3,9 +3,9 @@ import random
 import tqdm as tqdm  # Shows progress bars for loops
 from gui import *
 
-log = logging.getLogger(__name__)  # TODO need to implement custom __name__ for game
+log = logging.getLogger(__name__)
 
-class Arena():
+class Arena:
 
     def __init__(self, player1, player2, game, display=None):
         self.player1 = player1
@@ -13,7 +13,7 @@ class Arena():
         self.game = game
         self.display = display
 
-    def playGame(self, verbose=False):  # TODO Need to understand how turn taking & action taking works!!!
+    def playGame(self, verbose=False):
         if (self.display):
             print(f"Current game:\n{self.game}")
         players = [self.player1, self.player2]
@@ -25,29 +25,22 @@ class Arena():
             pg.display.update()
             player_index = 0 if cur_player == 1 else 1
             itNum += 1
-            is_mcts_player = players[player_index].__name__ != 'play'  # FIXME DELETE LATER
+            is_mcts_player = players[player_index].__name__ != 'play'
             valids = self.game.getValidMoves(board, cur_player)
             if verbose:  # Verbose represents debugging
                 assert self.display
-
                 player_turn = str(1) if cur_player == 1 else str(2)
                 player_type = players[player_index].__qualname__
                 player_type = player_type[0 : (len(player_type) - 5)] if not is_mcts_player else 'MCTSPlayer'
                 print(f"Turn {str(itNum)} Player {player_turn} ({player_type}) ")
                 self.display(display_surface, str(board), self.game.getCanonicalForm(board))
-
                 p_pieces = board.pieces[1 if cur_player == 1 else 0]
-                for i in range(0, len(valids)):  # iterate over moves
-                    if valids[i]:
-                        print(f"P{1 if cur_player == 1 else 2} piece[{i}] at {p_pieces[i]}:{valids[i]}")
-
-            #  temp = self.game.getCanonicalForm(board, cur_player)
-            # if not is_mcts_player:
+                if player_type == "HumanPlayer":
+                    for i in range(0, len(valids)):  # iterate over moves
+                        if valids[i]:
+                            print(f"P{1 if cur_player == 1 else 2} piece[{i}] at {p_pieces[i]}:{valids[i]}")
                 action = players[player_index](display_surface, board, cur_player)
-            # else:
-            #     action = players[player_index](board, cur_player)
             if action[1] not in valids[action[0]]:
-
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
                 assert valids[action] > 0
@@ -63,6 +56,7 @@ class Arena():
             pg.display.update()
             self.display(display_surface, str(board), self.game.getCanonicalForm(board))
             print(f"Game over: Turn {str(itNum)}\nResult {str(self.game.getGameEnded(board, 1))}")
+
         return cur_player * self.game.getGameEnded(board, cur_player)
 
     def playGames(self, num, verbose=False):

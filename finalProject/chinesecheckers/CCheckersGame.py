@@ -25,16 +25,6 @@ class CCheckersGame(Game):
         return str(board)
 
     def getInitBoard(self):
-        '''TODO
-            Compact code by using tuples of coordinates -> map to board on print
-            As opposed to string layout of board + updating per move
-            |
-            Hard code/precompute all moves at every pit
-                Prune off if piece in pit
-                    But also hardcode if piece can jump + prune if not possible
-            |
-            Results in 12 possible moves being hardcoded per pit
-        '''
         b = Board(self.n)
         return b  # In array form for neural network
 
@@ -46,17 +36,11 @@ class CCheckersGame(Game):
 
     def getNextState(self, board, player, action):
         # For player taking an action on board
-        # TODO Need to check if action is valid
         if action == [-1, -1]:
             return (board, -player)
         b = board.duplicate()
         piece, move = action
         b.execute_move(player, piece, move)
-
-        if (b.pieces != board.pieces).all():
-            assert 0
-
-
         return (b, -player)
 
     def getValidMoves(self, board, player):
@@ -69,12 +53,8 @@ class CCheckersGame(Game):
                         moves that are valid from the current board and player,
                         0 for invalid moves
         """
-        valids = [0] * self.getActionSize()
         b = board.duplicate()
         legal_moves = b.get_legal_moves(player)
-        if len(legal_moves) == 0:
-            valids[-1] = 1  # TODO not sure what this does!!!
-            return np.array(valids)
         return legal_moves
 
     def getGameEnded(self, board, player):
@@ -158,9 +138,9 @@ class CCheckersGame(Game):
         for i in range(6):
             if player_index:
                 score += scorePlayer1[b.pieces[player_index, i]][0]
-                score -= scorePlayer2[b.pieces[player_index - 1, i]][0]
+                score -= scorePlayer2[b.pieces[player_index-1, i]][0]
             else:
-                score -= scorePlayer1[b.pieces[player_index + 1, i]][0]
+                score -= scorePlayer1[b.pieces[player_index+1, i]][0]
                 score += scorePlayer2[b.pieces[player_index, i]][0]
         return score
 

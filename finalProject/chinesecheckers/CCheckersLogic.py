@@ -20,7 +20,6 @@ Things needed to keep track off:
 import numpy as np
 
 '''
-
       Board Indexes
              0  
            1   2  
@@ -33,21 +32,7 @@ import numpy as np
         30  31  32  
           33  34  
             35
-            
-Better Board indexing for Random
-             0  
-           1   2  
-         4   3   5  
-       8   6   7   9  
-    13  11  10  12  14  
-  19  17  15  16  18  20  
-    24  22  21  23  25  
-      28  26  27  29  
-        31  30  32  
-          33  34  
-            35
-            
-            
+   
 '''
 
 moves = [
@@ -89,41 +74,41 @@ moves = [
     [33, 34]                    # edge 35
 ]
 jumpMoves = [
-    [3, 5],                 # edge 0
-    [6, 8],                 # edge 1
-    [7, 9],                 # edge 2
-    [0, 10, 12, 5],         # edge 3
-    [11, 13],               # mid 4
-    [0, 3, 12, 14],         # edge 5
-    [1, 8, 15, 17],         # edge 6
-    [2, 9, 16, 18],         # mid 7
-    [1, 6, 17, 19],         # mid 8
-    [2, 7, 18, 20],         # edge 9
-    [3, 12, 22],            # edge 10
-    [4, 13, 21, 23],        # mid 11
-    [3, 5, 10, 14, 22, 24], # mid 12
-    [4, 11, 23, 25],        # mid 13
-    [5, 12, 24],            # mid 14
-    [6, 17, 26],               # edge 15
-    [7, 18, 27],   # mid 16
-    [6, 8, 15, 19, 26, 28],   # mid 17
-    [7, 9, 16, 20, 27, 29],   # mid 18
-    [8, 17, 28],   # mid 19
-    [9, 18, 29],               # edge 20
-    [11, 23, 30],           # edge 21
-    [10, 12, 24, 31],   # mid 22
+    [3, 5],                     # edge 0
+    [6, 8],                     # edge 1
+    [7, 9],                     # edge 2
+    [0, 10, 12, 5],             # edge 3
+    [11, 13],                   # mid 4
+    [0, 3, 12, 14],             # edge 5
+    [1, 8, 15, 17],             # edge 6
+    [2, 9, 16, 18],             # mid 7
+    [1, 6, 17, 19],             # mid 8
+    [2, 7, 18, 20],             # edge 9
+    [3, 12, 22],                # edge 10
+    [4, 13, 21, 23],            # mid 11
+    [3, 5, 10, 14, 22, 24],     # mid 12
+    [4, 11, 23, 25],            # mid 13
+    [5, 12, 24],                # edge 14
+    [6, 17, 26],                # edge 15
+    [7, 18, 27],                # mid 16
+    [6, 8, 15, 19, 26, 28],     # mid 17
+    [7, 9, 16, 20, 27, 29],     # mid 18
+    [8, 17, 28],                # mid 19
+    [9, 18, 29],                # edge 20
+    [11, 23, 30],               # edge 21
+    [10, 12, 24, 31],           # mid 22
     [11, 13, 21, 25, 30, 32],   # mid 23
-    [12, 14, 22, 31],   # mid 24
-    [13, 23, 32],       # edge 25
+    [12, 14, 22, 31],           # mid 24
+    [13, 23, 32],               # edge 25
     [15, 17, 28, 33],           # edge 26
-    [16, 18, 29, 34],   # mid 27
-    [17, 19, 26, 33],   # mid 28
-    [18, 20, 27, 34],       # edge 29
+    [16, 18, 29, 34],           # mid 27
+    [17, 19, 26, 33],           # mid 28
+    [18, 20, 27, 34],           # edge 29
     [21, 23, 32, 35],           # edge 30
-    [22, 24],           # mid 31
+    [22, 24],                   # mid 31
     [23, 25, 30, 35],           # edge 32
-    [26, 28],           # edge 33
-    [27, 29],           # edge 34
+    [26, 28],                   # edge 33
+    [27, 29],                   # edge 34
     [30, 32]                    # edge 35
 ]
 
@@ -209,36 +194,6 @@ class Board:
                  ["-", " ", " ", " ", " ", " "]]
         out = ""
         index = 0
-        # for r in range(0, 11):
-        #     line = board[r]
-        #     linetab = r - 4
-        #     if (r <= 5):
-        #         linetab = 6 - r
-        #     for t in range(0, linetab):
-        #         out += "  "
-        #     for c in range(0, len(line)):
-        #         isEnd = c == len(line) - 1
-        #         cur = line[c]
-        #         if cur != "-" and cur != " ":
-        #             out += f"{cur} "
-        #         elif cur == "-":
-        #             tmpP1 = index == self.pieces[0,:]
-        #             tmpP2 = index == self.pieces[1,:]
-        #             arr1 = np.array([0, 1, 2, 3, 4, 5])
-        #             if np.sum(tmpP1):
-        #                 out += f" {arr1[tmpP1].item()}  "
-        #             elif np.sum(tmpP2):
-        #                 out += f"-{arr1[tmpP2].item()}  "
-        #             else:
-        #                 out += " -  "
-        #             # if index > 9:
-        #             #     out += str(index) + "  "
-        #             # else:
-        #             #     out += " " + str(index) + "  "
-        #             index += 1
-        #         if isEnd or cur == " ":
-        #             out += "\n"
-        #             break
         for r in range(0, 11):
             line = board[r]
             linetab = r - 4
@@ -259,15 +214,10 @@ class Board:
                         out += f" 2_{arr1[tmpP2].item()}  "
                     else:
                         out += "  -   "
-                    # if index > 9:
-                    #     out += str(index) + "  "
-                    # else:
-                    #     out += " " + str(index) + "  "
                     index += 1
                 if isEnd or cur == " ":
                     out += "\n"
                     break
-        # out += "\n"
         return out
 
     def get_legal_moves(self, player):
@@ -334,7 +284,6 @@ class Board:
         """
         Gives all single moves given the player and piece number
         """
-        # print(f"Current piece's board index: {pieceInd}")
         single_moves = moves_array[piece]
         valid_single_moves = single_moves[board_map[single_moves] == 0]
         return valid_single_moves
@@ -349,13 +298,10 @@ class Board:
             potentialJumpMoves = moves_array[invalidMove]
             # Find if there is space for a potential jump move
             validPotentialJumpMoves = potentialJumpMoves[board_map[potentialJumpMoves] == 0]
-            # print(f"Valid potential jump moves: {validPotentialJumpMoves}")
             for i in range(jump_moves.shape[0]):  # going over the valid moves
-                # print(f"cur jumpMoves: {jumpMoves[i]}")
                 if sum(jump_moves[i] == validPotentialJumpMoves):
                     validJumpMoves.append(jump_moves[i])
                     break
-        # print(f"Piece {piece} has valid jump moves: {validJumpMoves}")
         return validJumpMoves
 
     def is_valid_piece_move(self, player, piece, action):
@@ -374,11 +320,9 @@ class Board:
             assert(action_is_single is not action_is_jump)
 
         if action in valid_single_moves:
-            # print(f"{action} is a single move")
             return True
 
         elif action in valid_jump_moves:
-            # print(f"{action} is a jump move")
             return True
         else:
             return False
@@ -395,7 +339,6 @@ class Board:
         moves = self.get_legal_moves(player)
         # Should never call on execute if no moves are able to be made
         assert len(list(moves)) > 0
-        # print(f"Moving piece {piece} to pit[{action}]")
 
         board_map = np.zeros((36))
         board_map[self.pieces] = 1  # Important for defining where the players pieces are (both P1 and P2!!)
@@ -408,15 +351,6 @@ class Board:
         action_is_jump = action in valid_jump_moves
         if action_is_single is True and action_is_jump is True:
             assert(action_is_single is not action_is_jump)
-
-        if action in valid_single_moves:
-            # print(f"{action} is a single move")
-            x = 0
-
-        if action in valid_jump_moves:
-            # print(f"{action} is a jump move")
-            x = 0
-
 
         if action in moves[player_piece]:
             self.pieces[player_index, player_piece] = action

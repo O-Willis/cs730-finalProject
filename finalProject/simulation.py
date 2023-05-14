@@ -1,11 +1,9 @@
 import sys
 
 import Arena
-from MCTS import MCTS
 from finalProject.gui_2 import *
 from chinesecheckers.CCheckersPlayers import *
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
-# from chinesecheckers.pytorch.NNet import NNetWrapper as Net
 
 import numpy as np
 from utils import *
@@ -40,37 +38,31 @@ rp = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 alphaPlayer = AlphaBetaPlayer(game).play
 
-args = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
-mcts = MCTSPlayer(game, args)
-mctsPlayer = lambda x, _: np.argmax(mcts.getActionProb(x, -1, temp=0))
+# args = dotdict({'numMCTSSims': 10, 'cpuct': 1.0})
+args = dotdict({'numMCTSSims': 150})
+mcts = MCTSPlayer(game, args).play
+#mctsPlayer = lambda x, _: np.argmax(mcts.getActionProb(x, -1, temp=0))
+mctsPlayer = mcts
 
-player1 = minimaxPlayer
-player2 = minimaxPlayer
-
+player1 = rp
+player2 = rp
+is_duplicate = False
 if 'human' in sys.argv:  # normally sets player 2 to specified opponent
     player1 = humanPlayer
-elif 'minimax' in sys.argv:
-    player1 = alphaPlayer
+    if sys.argv.count('human') == 2:
+        player2 = humanPlayer
+if 'minimax' in sys.argv:
+    player1 = minimaxPlayer
+    if sys.argv.count('minimax') == 2:
+        player2 = minimaxPlayer
 elif 'mcts' in sys.argv:
     player1 = mctsPlayer
-elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Implementation
-    x = 0
-    # neural = NNet(game)
-    # neural.load_checkpoint('./pretrained_models/pytorch/', '100checkpoints_best.pth.tar')
-    # mcts1 = MCTS(game, neural, args)
-
-if battle_type == 2:  # default 0 represents AI vs AI
-    if 'minimax' in sys.argv:
-        player2 = minimaxPlayer
-    elif 'mcts' in sys.argv:
+    if sys.argv.count('mcts') == 2:
         player2 = mctsPlayer
-    elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Implementation
-        x = 0
-        # neural = NNet(game)
-        # neural.load_checkpoint('./pretrained_models/pytorch/', '100checkpoints_best.pth.tar')
-        # mcts2 = MCTS(game, neural, args)
-    else:
-        player2 = humanPlayer
+elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Implementation
+    player1 = alphaPlayer
+    if sys.argv.count('alpha') == 2:
+        player2 = alphaPlayer
 
 arena = Arena.Arena(player1, player2, game, display=Game.display)
 
