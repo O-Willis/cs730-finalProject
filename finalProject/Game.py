@@ -107,16 +107,3 @@ class Game:
                          Required by MCTS for hashing.
         """
         pass
-
-    def minimax(self, board, player, maxDepth, playerHeuristic, maxP):
-        """
-        Input:
-            board: current board
-            player: current player
-            maxDepth: maxDepth that we want to reach
-            playerHeuristic: used to find score for the player that started minimax
-            maxP: used to determine maximizing/minimizing player
-        Returns:
-            the best action
-        """
-        pass
