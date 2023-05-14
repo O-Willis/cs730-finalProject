@@ -27,6 +27,10 @@ battle_type = 0
 if '-play' in sys.argv:
     if len(sys.argv) < 2:
         failCode(0)
+
+    if len(sys.argv) == 3:
+        battle_type = 2
+
     elif len(sys.argv) > 2:
         battle_type = int(sys.argv[2])
 
@@ -34,6 +38,7 @@ game = Game(6)
 humanPlayer = HumanPlayer(game).play
 rp = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
+alphaPlayer = AlphaBetaPlayer(game).play
 
 # args = dotdict({'numMCTSSims': 10, 'cpuct': 1.0})
 args = dotdict({'numMCTSSims': 100})
@@ -41,8 +46,8 @@ mcts = MCTSPlayer(game, args).play
 #mctsPlayer = lambda x, _: np.argmax(mcts.getActionProb(x, -1, temp=0))
 mctsPlayer = mcts
 
-player1 = rp
-player2 = rp
+player1 = minimaxPlayer
+player2 = minimaxPlayer
 
 if 'human' in sys.argv:  # normally sets player 2 to specified opponent
     player1 = humanPlayer
@@ -58,7 +63,7 @@ if 'human' in sys.argv:  # normally sets player 2 to specified opponent
     else:
         player2 = humanPlayer
 elif 'minimax' in sys.argv:
-    player1 = minimaxPlayer
+    player1 = alphaPlayer
 elif 'mcts' in sys.argv:
     player1 = mctsPlayer
 elif 'alpha' in sys.argv:  # TODO add this in after MCTS standalone + NNet Implementation

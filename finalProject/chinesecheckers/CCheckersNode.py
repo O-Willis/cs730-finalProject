@@ -12,7 +12,6 @@ class Node:
     def __init__(self, game, state, player, parent=None, action=None):
         self.game = game
         self.state = state
-        # self.state.pieces = np.copy(state.pieces)  # changes when expanding
         self.cur_player = player
         self.action = action  # Action is a tuple (piece, move)
         self.parent = parent

@@ -1,9 +1,8 @@
-class Game():
+class Game:
     """
     Use 1 for player1 and -1 for player2.
 
     """
-
 
     def __init__(self):
         pass
@@ -66,7 +65,12 @@ class Game():
         """
         pass
 
+
+    def getScore(self, board, player):
+        pass
+
     def getPlayerGoals(self, player):
+
         pass
 
     def getPlayerPieces(self, board):
@@ -97,5 +101,24 @@ class Game():
         """
         pass
 
-    def getSelection(self, board, cur_player):
+    def getStateValues(self, board, player, maxDepth):
+        """
+        Input:
+            board: current board
+            player: current player
+            index: current index of player
+        Returns:
+            a value for state
+        """
+        pass
+
+    def minimax(self, board, player, maxDepth, playerHeuristic, maxP):
+        """
+        Input:
+            board: current board
+            player: current player
+            maxDepth: maxDepth that we want to reach
+        Returns:
+            a pass
+        """
         pass
