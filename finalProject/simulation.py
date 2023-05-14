@@ -75,6 +75,7 @@ game = Game(6)
 humanPlayer = HumanPlayer(game).play
 rp = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
+alphaPlayer = AlphaBetaPlayer(game).play
 
 args = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
 mcts = MCTSPlayer(game, args)

@@ -133,34 +133,6 @@ class CCheckersGame(Game):
         """
         return str(board)
 
-    ''' Score of Player 1
-                      0      goal
-                   -1   -1  
-                 -2   -2   -2  
-               -3   -3   -3  -3  
-            -4   -4   -4   -4   -4  
-          -5   -5   -5   -5   -5  -5  
-            -6   -6   -6   -6   -6  
-              -7   -7   -7   -7  
-                -9    -9   -9  
-                  -12   -12  
-                     -16    starting
-        '''
-
-    ''' Score of Player 2
-                          -16     starting
-                       -12   -12  
-                     -9   -9   -9  
-                   -7   -7   -7  -7  
-                -6   -6   -6   -6   -6  
-              -5   -5   -5   -5   -5  -5  
-                 -4   -4   -4   -4  -4  
-                   -3   -3   -3   -3  
-                     -2    -2   -2  
-                        -1    -1  
-                            0     goal 
-            '''
-
     def getScore(self, board, player):
         playerInd = 1 if player == 1 else 0
         score = 0
