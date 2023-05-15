@@ -1,6 +1,5 @@
 import logging
 import random
-import tqdm as tqdm  # Shows progress bars for loops
 
 log = logging.getLogger(__name__)
 
