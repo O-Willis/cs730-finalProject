@@ -272,9 +272,14 @@ class MCTSPlayer:
         self.args = args
         self.root = None
 
-    def play(self, state, player):
+    def play(self, opponent, state, player):
         opposing_player = RandPlayer(self.game).play
-        # root = createNode(self.game, state, player, None, None)
+        is_alpha = "AlphaBetaPlayer" in opponent.__qualname__
+        is_mcts = 'MCTSPlayer' in opponent.__qualname__
+        if is_alpha or is_mcts:
+            # opposing_player = MinMaxPlayer(self.game).play
+            x = 0
+
         root = Node(self.game, state, player, None, None)
 
         for i in range(self.args['numMCTSSims']):  # Iteration for loop

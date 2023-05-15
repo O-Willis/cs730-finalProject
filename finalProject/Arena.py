@@ -21,13 +21,12 @@ class Arena:
         while self.game.getGameEnded(board, cur_player) == 0:
             player_index = 0 if cur_player == 1 else 1
             itNum += 1
-            is_mcts_player = players[player_index].__name__ != 'play'
             valids = self.game.getValidMoves(board, cur_player)
+            player_turn = str(1) if cur_player == 1 else str(2)
+            player_type = players[player_index].__qualname__
+            player_type = player_type[0: (len(player_type) - 5)]
             if verbose:  # Verbose represents debugging
                 assert self.display
-                player_turn = str(1) if cur_player == 1 else str(2)
-                player_type = players[player_index].__qualname__
-                player_type = player_type[0 : (len(player_type) - 5)] if not is_mcts_player else 'MCTSPlayer'
                 print(f"Turn {str(itNum)} Player {player_turn} ({player_type}) ")
                 self.display(str(board))
                 p_pieces = board.pieces[1 if cur_player == 1 else 0]
@@ -35,7 +34,11 @@ class Arena:
                     for i in range(0, len(valids)):  # iterate over moves
                         if valids[i]:
                             print(f"P{1 if cur_player == 1 else 2} piece[{i}] at {p_pieces[i]}:{valids[i]}")
-            action = players[player_index](board, cur_player)
+            if 'MCTSPlayer' not in player_type:
+                action = players[player_index](board, cur_player)
+            else:
+                action = players[player_index](players[1-player_index], board, cur_player)
+
             if action[1] not in valids[action[0]]:
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')

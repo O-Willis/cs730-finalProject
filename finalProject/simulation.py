@@ -62,4 +62,4 @@ arena = Arena.Arena(player1, player2, game, display=Game.display)
 
 # Printing results
 # print(arena.playGame(verbose=True))
-print(arena.playGames(10, verbose=False))
+print(arena.playGames(10, verbose=True))
