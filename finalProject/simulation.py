@@ -4,7 +4,8 @@ from chinesecheckers.CCheckersPlayers import *
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
 
 if len(sys.argv) != 4:
-    print("Usage:[-play <player1> <player2>]")
+    print("Usage:[<player1> <player2>]")
+    print("\tPlayers List: human, minimax, alpha-beta, mcts")
     exit(0)
 
 # Initialize game
