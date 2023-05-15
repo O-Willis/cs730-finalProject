@@ -1,0 +1,1 @@
+python3 simulation.py -play $1 $2
