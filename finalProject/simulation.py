@@ -4,7 +4,7 @@ from chinesecheckers.CCheckersPlayers import *
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
 
 if len(sys.argv) != 4:
-    print("Usage:[<player1> <player2>]")
+    print("Usage:[./run.sh <player1> <player2>]")
     print("\tPlayers List: human, minimax, alpha-beta, mcts, random")
     exit(0)
 
@@ -33,7 +33,7 @@ elif sys.argv[2] == "random":
     player1 = randomPlayer
 else:
     print("\tNot proper player")
-    print("\tUsage:[<player1> <player2>]")
+    print("\tUsage:[./run.sh <player1> <player2>]")
     print("\tPlayers List: human, minimax, alpha-beta, mcts, random")
     exit(0)
 print("\tPlayer 1 is correctly chosen.\n")
@@ -52,7 +52,7 @@ elif sys.argv[3] == "random":
     player2 = randomPlayer
 else:
     print("\tNot proper player.")
-    print("\tUsage:[<player1> <player2>]")
+    print("\tUsage:[./run.sh <player1> <player2>]")
     print("\tPlayers List: human, minimax, alpha-beta, mcts, random")
     exit(0)
 
