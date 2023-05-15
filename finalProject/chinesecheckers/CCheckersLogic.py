@@ -330,8 +330,10 @@ class Board:
         is_in_goal = np.sum(np.reshape(self.pieces[player_index, :], (6, 1)) == goal[player_index]) == 6
         if is_in_goal:
             return True
-        player_start_index = (player_index) * 35  # If player 1, 35 or if player 2, 0
-        is_blocked = np.sum(np.reshape(self.pieces[player_index, :], (6, 1)) == goal[player_index]) == 5 and (self.pieces[opponent_index, :] == player_start_index).any()
+        player_start_index = (opponent_index) * 35  # If player 1, 35 or if player 2, 0
+        opponent_in_init_corner = (self.pieces[opponent_index, :] == player_start_index).any()
+        five_pieces_in_goal = np.sum(np.reshape(self.pieces[player_index, :], (6, 1)) == goal[player_index]) == 5
+        is_blocked = five_pieces_in_goal and opponent_in_init_corner
         if is_blocked:
             return True
         return False
