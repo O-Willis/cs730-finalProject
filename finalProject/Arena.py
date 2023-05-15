@@ -50,36 +50,16 @@ class Arena:
         if verbose:
             assert self.display
             self.display(str(board))
-            if self.game.getGameEnded(board, 1) == -1:
-                wonPlayer = " Player 2 win!"
+            if cur_player == -1:
+                if self.game.getGameEnded(board, cur_player) == 1:
+                    wonPlayer = " Player 2 win!"
+                else:
+                    wonPlayer = " Player 1 win!"
             else:
-                wonPlayer = " Player 1 win!"
+                if self.game.getGameEnded(board, cur_player) == 1:
+                    wonPlayer = " Player 1 win!"
+                else:
+                    wonPlayer = " Player 2 win!"
+
             print(f"Game over: Turn {str(itNum)}\nResult {wonPlayer}")
         return cur_player * self.game.getGameEnded(board, cur_player)
-
-    def playGames(self, num, verbose=False):
-        num = int(num / 2)
-        oneWon = 0
-        twoWon = 0
-
-        for _ in tqdm.tqdm(range(num), desc="Arena.playGames (1)"):
-            gameResult = self.playGame(verbose=verbose)
-            if gameResult == 1:
-                print("player 1 won!")
-                oneWon += 1
-            elif gameResult == -1:
-                twoWon += 1
-                print("player 2 won!")
-
-        self.player1, self.player2 = self.player2, self.player1
-
-        for _ in tqdm.tqdm(range(num), desc="Arena.playGames (2)"):
-            gameResult = self.playGame(verbose=verbose)
-            if gameResult == -1:
-                print("player 1 won!")
-                oneWon += 1
-            elif gameResult == 1:
-                print("player 2 won!")
-                twoWon += 1
-
-        return oneWon, twoWon
