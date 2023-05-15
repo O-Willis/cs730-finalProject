@@ -76,13 +76,6 @@ class Game:
         """
         pass
 
-    def getPlayerGoals(self, player):
-
-        pass
-
-    def getPlayerPieces(self, board):
-        pass
-
     def getCanonicalForm(self, board):
         """
         Input:
@@ -105,5 +98,12 @@ class Game:
         Returns:
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
+        """
+        pass
+
+    def getStringRepresentation(self):
+        """
+        Returns:
+            boardString: a string representation of board.
         """
         pass
