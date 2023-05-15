@@ -15,7 +15,7 @@ humanPlayer = HumanPlayer(game).play
 randomPlayer = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 alphaPlayer = AlphaBetaPlayer(game).play
-args = dotdict({'numMCTSSims': 100})
+args = dotdict({'numMCTSSims': 60})
 mcts = MCTSPlayer(game, args).play
 mctsPlayer = mcts
 
@@ -62,5 +62,5 @@ print("\tPlayer 2 is correctly chosen.\n")
 arena = Arena.Arena(player1, player2, game, display=Game.display)
 
 # Printing results
-# print(arena.playGame(verbose=True))
-print(arena.playGames(10, verbose=False))
+print(arena.playGame(verbose=True))
+# print(arena.playGames(10, verbose=False))
