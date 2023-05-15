@@ -1,4 +1,4 @@
-from finalProject.chinesecheckers.CCheckersLogic import *
+from .CCheckersLogic import *
 
 # Visited node should not be expanded
 # Can expand only one node at a time

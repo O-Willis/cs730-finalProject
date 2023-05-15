@@ -1,6 +1,6 @@
 import random
-from finalProject.chinesecheckers.CCheckersNode import Node
-from finalProject.chinesecheckers.CCheckersLogic import *
+from .CCheckersNode import Node
+from .CCheckersLogic import *
 from copy import deepcopy
 
 

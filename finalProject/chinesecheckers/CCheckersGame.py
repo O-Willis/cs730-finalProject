@@ -1,6 +1,9 @@
 from __future__ import print_function
+import sys
+sys.path.append('..')
+
 from finalProject.Game import Game
-from finalProject.chinesecheckers.CCheckersLogic import *
+from .CCheckersLogic import *
 
 class CCheckersGame(Game):
     pit_content = {
