@@ -1,8 +1,7 @@
+import sys
 import Arena
 from chinesecheckers.CCheckersPlayers import *
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
-from utils import *
-from gui_2 import *  # Contains gui elements
 
 if len(sys.argv) != 4:
     print("Usage:[-play <player1> <player2>]")
@@ -15,7 +14,7 @@ humanPlayer = HumanPlayer(game).play
 randomPlayer = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 alphaPlayer = AlphaBetaPlayer(game).play
-args = dotdict({'numMCTSSims': 60})
+args = {'numMCTSSims': 60}
 mcts = MCTSPlayer(game, args).play
 mctsPlayer = mcts
 
@@ -63,4 +62,3 @@ arena = Arena.Arena(player1, player2, game, display=Game.display)
 
 # Printing results
 print(arena.playGame(verbose=True))
-# print(arena.playGames(10, verbose=False))

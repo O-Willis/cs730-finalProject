@@ -9,7 +9,7 @@ class HumanPlayer:
     def __init__(self, game):
         self.game = game
 
-    def play(self, display_surface, board, player):
+    def play(self, board, player):
         valid = self.game.getValidMoves(board, player)  # Get valid moves as list
         entered_input = False
         while True:  # While loop for input
@@ -38,7 +38,7 @@ class RandPlayer:
         self.game = game
         self.threshold = 10
 
-    def play(self, display_surface, board, player):
+    def play(self, board, player):
         player_index = 1 if player == 1 else 0
         p_pieces = board.pieces[player_index]
         valid = self.game.getValidMoves(board, player)
@@ -69,9 +69,7 @@ class MinMaxPlayer:
     def __init__(self, game):
         self.game = game
 
-    def play(self, display_surface, board, player):
-        valid = self.game.getValidMoves(board, player)
-
+    def play(self, board, player):
         # calling minimax and waiting action information
         _, pieceToMove, nextIndex = self.minimax(board, player, 2, player, True)
         return [pieceToMove, nextIndex]
@@ -152,8 +150,7 @@ class AlphaBetaPlayer:
     def __init__(self, game):
         self.game = game
 
-    def play(self, display_surface, board, player):
-        valid = self.game.getValidMoves(board, player)
+    def play(self, board, player):
         alpha = float('-inf')
         beta = float('inf')
         _, pieceToMove, nextIndex = self.minimax(board, player, 4, player, True, alpha, beta)
@@ -254,7 +251,7 @@ def simulate(node, opposing_player):  # logic to simulate a game from this state
             child_node = Node(node.game, temp_state, temp_player, node, random_move)
             node.children.append(child_node)
             node = child_node
-        action = opposing_player(None, temp_state, temp_player)
+        action = opposing_player(temp_state, temp_player)
         node.state, node.cur_player = node.game.getNextState(temp_state, temp_player, action)
     return node, node.game.getGameEnded(node.state, node.cur_player)
 
@@ -275,11 +272,11 @@ class MCTSPlayer:
         self.args = args
         self.root = None
 
-    def play(self, display_surface, state, player):
+    def play(self, state, player):
         opposing_player = RandPlayer(self.game).play
         # root = createNode(self.game, state, player, None, None)
         root = Node(self.game, state, player, None, None)
 
-        for i in range(self.args.numMCTSSims):  # Iteration for loop
+        for i in range(self.args['numMCTSSims']):  # Iteration for loop
             selection(root, opposing_player)
         return root.best_child().action

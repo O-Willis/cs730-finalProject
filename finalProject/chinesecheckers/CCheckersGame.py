@@ -1,8 +1,6 @@
 from __future__ import print_function
 from finalProject.Game import Game
 from finalProject.chinesecheckers.CCheckersLogic import *
-from finalProject.gui_2 import *
-
 
 class CCheckersGame(Game):
     pit_content = {
@@ -26,9 +24,6 @@ class CCheckersGame(Game):
         b = Board(self.n)
         return b  # In array form for neural network
 
-    def getBoardSize(self):
-        return self.n
-
     def getActionSize(self):
         return 6  # Constant for number of possible moves from 1 pit
 
@@ -42,29 +37,11 @@ class CCheckersGame(Game):
         return (b, -player)
 
     def getValidMoves(self, board, player):
-        """
-        Input:
-            board: current board
-            player: current player
-        Returns:
-            validMoves: a binary vector of length self.getActionSize(), 1 for
-                        moves that are valid from the current board and player,
-                        0 for invalid moves
-        """
         b = board.duplicate()
         legal_moves = b.get_legal_moves(player)
         return legal_moves
 
     def getGameEnded(self, board, player):
-        """
-        Input:
-            board: current board
-            player: current player (1 or -1)
-        Returns:
-            r: 0 if game has not ended. 1 if player won, -1 if player lost,
-               small non-zero value for draw.
-
-        """
         b = board.duplicate()
         if b.is_game_over(player):  # Player can be represented by either 1 or -1
             return 1
@@ -72,34 +49,6 @@ class CCheckersGame(Game):
             return -1
         else:
             return 0
-
-    def getCanonicalForm(self, board):
-        """
-        Input:
-            board: current board
-            player: current player (1 or -1)
-        Returns:
-            canonicalBoard: returns canonical form of board. The canonical form
-                            should be independent of player. For e.g. in chess,
-                            the canonical form can be chosen to be from the pov
-                            of white. When the player is white, we can return
-                            board as is. When the player is black, we can invert
-                            the colors and return the board.
-        """
-        map = np.zeros((36))
-        map[board[0]] = -1
-        map[board[1]] = 1
-        return map  # Returns the np.array as the player's state
-
-    def stringRepresentation(self, board):
-        """
-        Input:
-            board: current board
-        Returns:
-            boardString: a quick conversion of board to a string format.
-                         Required by MCTS for hashing.
-        """
-        return board.tostring()
 
     ''' 
     ========= Score of Player 1 =========
@@ -143,8 +92,7 @@ class CCheckersGame(Game):
         return score
 
     @staticmethod
-    def display(display, board, cannonical):
-        display_layout(display, cannonical)
+    def display(board):
         print("----------------------------------------")
         print(str(board), end="")
         print("----------------------------------------")

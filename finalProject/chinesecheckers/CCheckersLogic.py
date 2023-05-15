@@ -1,39 +1,4 @@
-'''
-Class for Board
-Data:
-    1=White, -1=Black, 0=Empty
-    Dimensions are as follows:
-        column x row
-Pits are stored and manipulated as (x,y) tuples
-x is the column, y is the row.
-'''
-
-'''
-Things needed to keep track off:
-    - Getting all legal moves of a specific piece and color/player
-    - Executing that move
-    - Indicating when a turn is over
-        * Undoing a move (or not lol)
-    - 
-
-'''
 import numpy as np
-
-'''
-      Board Indexes
-             0  
-           1   2  
-         3   4   5  
-       6   7   8   9  
-    10  11  12  13  14  
-  15  16  17  18  19  20  
-    21  22  23  24  25  
-      26  27  28  29  
-        30  31  32  
-          33  34  
-            35
-   
-'''
 
 moves = [
     [1, 2],                     # edge 0

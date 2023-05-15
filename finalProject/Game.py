@@ -1,7 +1,6 @@
 class Game:
     """
-    Use 1 for player1 and -1 for player2.
-
+    1 for player1 and -1 for player2.
     """
 
     def __init__(self):
@@ -10,22 +9,14 @@ class Game:
     def getInitBoard(self):
         """
         Returns:
-            startBoard: a representation of the board (ideally this is the form
-                        that will be the input to your neural network)
-        """
-        pass
-
-    def getBoardSize(self):
-        """
-        Returns:
-            (x,y): tuple of board dimensions
+            b: a representation of the initial board
         """
         pass
 
     def getActionSize(self):
         """
         Returns:
-            actionSize: number of all possible actions
+            a constant number 6
         """
         pass
 
@@ -34,10 +25,11 @@ class Game:
         Input:
             board: current board
             player: current player (1 or -1)
-            action: action taken by current player
+            action: action taken by the current player
         Returns:
-            nextBoard: board after applying action
-            nextPlayer: player who plays in the next turn (should be -player)
+            (b, -player)
+            b: the board after the action
+            -player: the next player after the action
         """
         pass
 
@@ -47,9 +39,8 @@ class Game:
             board: current board
             player: current player
         Returns:
-            validMoves: a binary vector of length self.getActionSize(), 1 for
-                        moves that are valid from the current board and player,
-                        0 for invalid moves
+            legal_moves:
+            a list of actions that can be made for each pits
         """
         pass
 
@@ -59,9 +50,9 @@ class Game:
             board: current board
             player: current player (1 or -1)
         Returns:
-            r: 0 if game has not ended. 1 if player won, -1 if player lost,
-               small non-zero value for draw.
-
+            0 if game is not finished.
+            1 if player won,
+            -1 if player lost,
         """
         pass
 
@@ -72,38 +63,13 @@ class Game:
             board: current board
             player: current player (1 or -1)
         Returns:
-            the score of the game state, depeneding on both players location
+            score: the score of the game state, depending on both players location
         """
         pass
 
-    def getPlayerGoals(self, player):
-
-        pass
-
-    def getPlayerPieces(self, board):
-        pass
-
-    def getCanonicalForm(self, board):
+    def getStringRepresentation(self):
         """
-        Input:
-            board: current board
-            player: current player (1 or -1)
         Returns:
-            canonicalBoard: returns canonical form of board. The canonical form
-                            should be independent of player. For e.g. in chess,
-                            the canonical form can be chosen to be from the pov
-                            of white. When the player is white, we can return
-                            board as is. When the player is black, we can invert
-                            the colors and return the board.
-        """
-        pass
-
-    def stringRepresentation(self, board):
-        """
-        Input:
-            board: current board
-        Returns:
-            boardString: a quick conversion of board to a string format.
-                         Required by MCTS for hashing.
+            conversion of board data structure to game visualization.
         """
         pass

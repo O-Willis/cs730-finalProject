@@ -1,8 +1,0 @@
-Game 1:
-Player1 move piece 4 from (2,0) -> (3,0)
-Player2 move piece 5 from (8,1) -> (7,1)
-Player1 move piece 3 from (1,1) 1 jump (4,3)
-Player2 move piece 4 from (8,1) 1 jump (7,1)
-Player1 wins
-
-Game 2:

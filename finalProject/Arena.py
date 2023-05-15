@@ -1,7 +1,6 @@
 import logging
 import random
 import tqdm as tqdm  # Shows progress bars for loops
-from gui import *
 
 log = logging.getLogger(__name__)
 
@@ -19,10 +18,8 @@ class Arena:
         players = [self.player1, self.player2]
         cur_player = -1 if random.randint(1, 2) == 1 else 1
         board = self.game.getInitBoard()
-        display_surface = init_board()
         itNum = 0
         while self.game.getGameEnded(board, cur_player) == 0:
-            pg.display.update()
             player_index = 0 if cur_player == 1 else 1
             itNum += 1
             is_mcts_player = players[player_index].__name__ != 'play'
@@ -33,13 +30,13 @@ class Arena:
                 player_type = players[player_index].__qualname__
                 player_type = player_type[0 : (len(player_type) - 5)] if not is_mcts_player else 'MCTSPlayer'
                 print(f"Turn {str(itNum)} Player {player_turn} ({player_type}) ")
-                self.display(display_surface, str(board), self.game.getCanonicalForm(board))
+                self.display(str(board))
                 p_pieces = board.pieces[1 if cur_player == 1 else 0]
                 if player_type == "HumanPlayer":
                     for i in range(0, len(valids)):  # iterate over moves
                         if valids[i]:
                             print(f"P{1 if cur_player == 1 else 2} piece[{i}] at {p_pieces[i]}:{valids[i]}")
-            action = players[player_index](display_surface, board, cur_player)
+            action = players[player_index](board, cur_player)
             if action[1] not in valids[action[0]]:
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
@@ -53,8 +50,7 @@ class Arena:
 
         if verbose:
             assert self.display
-            pg.display.update()
-            self.display(display_surface, str(board), self.game.getCanonicalForm(board))
+            self.display(str(board))
             if self.game.getGameEnded(board, 1) == -1:
                 wonPlayer = " Player 2 win!"
             else:
