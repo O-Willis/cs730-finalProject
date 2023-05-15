@@ -3,7 +3,7 @@ import Arena
 from chinesecheckers.CCheckersPlayers import *
 from chinesecheckers.CCheckersGame import CCheckersGame as Game
 
-if len(sys.argv) != 4:
+if len(sys.argv) != 5:
     print("Usage:[-play <player1> <player2>]")
     exit(0)
 
@@ -14,21 +14,21 @@ humanPlayer = HumanPlayer(game).play
 randomPlayer = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 alphaPlayer = AlphaBetaPlayer(game).play
-args = {'numMCTSSims': 60}
+args = {'numMCTSSims': int(sys.argv[2])}
 mcts = MCTSPlayer(game, args).play
 mctsPlayer = mcts
 
 # Choosing game player 1
-print(f"\nAsked for Player 1 to be {sys.argv[2]}")
-if sys.argv[2] == "human":
+print(f"\nAsked for Player 1 to be {sys.argv[3]}")
+if sys.argv[3] == "human":
     player1 = humanPlayer
-elif sys.argv[2] == "minimax":
+elif sys.argv[3] == "minimax":
     player1 = minimaxPlayer
-elif sys.argv[2] == "alpha-beta":
+elif sys.argv[3] == "alpha-beta":
     player1 = alphaPlayer
-elif sys.argv[2] == "mcts":
+elif sys.argv[3] == "mcts":
     player1 = mctsPlayer
-elif sys.argv[2] == "random":
+elif sys.argv[3] == "random":
     player1 = randomPlayer
 else:
     print("\tNot proper player")
@@ -38,16 +38,16 @@ else:
 print("\tPlayer 1 is correctly chosen.\n")
 
 # Choosing game player 2
-print(f"Asked for Player 2 to be {sys.argv[3]}")
-if sys.argv[3] == "human":
+print(f"Asked for Player 2 to be {sys.argv[4]}")
+if sys.argv[4] == "human":
     player2 = humanPlayer
-elif sys.argv[3] == "minimax":
+elif sys.argv[4] == "minimax":
     player2 = minimaxPlayer
-elif sys.argv[3] == "alpha-beta":
+elif sys.argv[4] == "alpha-beta":
     player2 = alphaPlayer
-elif sys.argv[3] == "mcts":
+elif sys.argv[4] == "mcts":
     player2 = mctsPlayer
-elif sys.argv[3] == "random":
+elif sys.argv[4] == "random":
     player2 = randomPlayer
 else:
     print("\tNot proper player.")
@@ -61,4 +61,5 @@ print("\tPlayer 2 is correctly chosen.\n")
 arena = Arena.Arena(player1, player2, game, display=Game.display)
 
 # Printing results
-print(arena.playGame(verbose=True))
+# print(arena.playGame(verbose=True))
+print(arena.playGames(10, verbose=False))

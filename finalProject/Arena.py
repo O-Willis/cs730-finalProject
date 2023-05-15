@@ -63,3 +63,30 @@ class Arena:
 
             print(f"Game over: Turn {str(itNum)}\nResult {wonPlayer}")
         return cur_player * self.game.getGameEnded(board, cur_player)
+
+    def playGames(self, num, verbose=False):
+        num = int(num / 2)
+        oneWon = 0
+        twoWon = 0
+
+        for _ in range(num):
+            gameResult = self.playGame(verbose=verbose)
+            if gameResult == 1:
+                print("Player 1 won!")
+                oneWon += 1
+            elif gameResult == -1:
+                print("Player 2 won!")
+                twoWon += 1
+
+        self.player1, self.player2 = self.player2, self.player1
+
+        for _ in range(num):
+            gameResult = self.playGame(verbose=verbose)
+            if gameResult == -1:
+                print("Player 1 won!")
+                oneWon += 1
+            elif gameResult == 1:
+                print("Player 2 won!")
+                twoWon += 1
+
+        return oneWon, twoWon
