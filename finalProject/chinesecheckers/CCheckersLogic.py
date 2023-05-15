@@ -331,7 +331,7 @@ class Board:
         if is_in_goal:
             return True
         player_start_index = (player_index) * 35  # If player 1, 35 or if player 2, 0
-        is_blocked = np.sum(np.reshape(self.pieces[opponent_index, :], (6, 1)) == goal[opponent_index]) == 5 and (self.pieces[player_index, :] == player_start_index).any()
+        is_blocked = np.sum(np.reshape(self.pieces[player_index, :], (6, 1)) == goal[player_index]) == 5 and (self.pieces[opponent_index, :] == player_start_index).any()
         if is_blocked:
             return True
         return False

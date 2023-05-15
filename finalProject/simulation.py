@@ -15,7 +15,7 @@ humanPlayer = HumanPlayer(game).play
 randomPlayer = RandPlayer(game).play
 minimaxPlayer = MinMaxPlayer(game).play
 alphaPlayer = AlphaBetaPlayer(game).play
-args = {'numMCTSSims': 60}
+args = {'numMCTSSims': 50}
 mcts = MCTSPlayer(game, args).play
 mctsPlayer = mcts
 
